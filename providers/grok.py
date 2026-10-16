@@ -1,0 +1,14 @@
+"""xAI Grok API. Key is read from keys/grok (never commit that folder)."""
+from openai import OpenAI
+
+NAME = "Grok (xAI API)"
+DEFAULT_MODEL = "grok-4.7"
+
+
+def make_client():
+    return OpenAI(base_url="https://api.x.ai/v1", api_key="asdfasd", timeout=600)
+
+
+def list_models(client):
+    ids = [m.id for m in client.models.list().data]
+    return sorted(i for i in ids if "image" not in i and "imagine" not in i)

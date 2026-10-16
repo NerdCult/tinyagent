@@ -1,16 +1,17 @@
 from collections import deque
+from colorama import Fore, init  
 
-class agent:
+class Agent:
     def __init__(self, provider, sys_prompt, context_length):
         self.prov = provider
         self.context = deque(maxlen=context_length)
         self.sys_prompt = sys_prompt
 
     def chat(self, message):
-        self.context.append({'role': 'user', 'content': user})
+        self.context.append({'role': 'user', 'content': message})
         try:
             stream = self.prov["client"].chat.completions.create(
-                model="Gemma4 12b", 
+                model="gemma-4-12B-it-QAT-GGUF", 
                 messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context),
                 stream=True)
 
@@ -42,33 +43,3 @@ class agent:
         except KeyboardInterrupt:
             pass
 
-if __name__ == "__main__":
-    from colorama import Fore, init
-    import providers
-
-    init(autoreset=True)
-
-    providers.load()
-
-    print ("Please Select your provider:")
-
-    x = 0
-    provs = {}
-    for p in providers.summary():
-        x = x + 1
-        print (f"{x}. {p['id']}")
-        provs[x] = p['id']
-
-    selection = int(input())
-
-    prov = providers.PROVIDERS[provs[selection]]
-
-    print (prov)
-
-    sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.'
-
-    agnt = agent(prov, sys_prompt, 150)
-
-    while True:
-        user = input(Fore.GREEN + '\n>>> ')
-        agnt.chat(user)

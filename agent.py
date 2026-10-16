@@ -1,3 +1,4 @@
+from collections import deque
 import providers
 
 providers.load()
@@ -18,11 +19,12 @@ prov = providers.PROVIDERS[provs[selection]]
 
 print (prov)
 
+context = deque(maxlen=150)
 while True:
-    user = input()
+    user = input('>>>')
+    context.append({'role': 'user', 'content': user})
     response = prov["client"].chat.completions.create(
-                    model="Gemma4 12b", messages=[
-                        {"role": "user", "content": user}
-                    ])
+                    model="Gemma4 12b", messages=context)
 
-    print (response.choices[0].message.content)
+    context.append({'role': 'assistant', 'content': response.choices[0].message.content})
+    print ('agent>', response.choices[0].message.content)

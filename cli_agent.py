@@ -22,9 +22,28 @@ prov = providers.PROVIDERS[provs[selection]]
 print (prov)                              
 
 sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.'   
-         
-agnt = Agent(prov, sys_prompt, 150)                 
 
+agnt = Agent(prov, sys_prompt, 150)                 
+thinking = False
+replying = False
 while True:                                                                               
-    user = input(Fore.GREEN + '\n>>> ')                                                   
-    agnt.chat(user)                                                                       
+    user = input(Fore.GREEN + '\n>>> ')   
+    try:                                                
+        for a in agnt.chat(user):
+            if a['behavior'] == 'thinking':
+                if not thinking:
+                    thinking = True
+                    replying = False
+                    print (Fore.LIGHTRED_EX + '\nthinking> ', end="")
+                print (Fore.LIGHTRED_EX + a['content'], end="")
+
+
+            if a['behavior'] == 'replying':
+                if not replying:
+                    thinking = False
+                    replying = True
+                    print (Fore.CYAN + '\nagent> ', end="")
+                print (Fore.CYAN + a['content'], end="")
+
+    except KeyboardInterrupt:
+        pass

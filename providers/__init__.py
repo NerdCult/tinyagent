@@ -1,6 +1,11 @@
-import importlib, pkgutil, traceback
+import importlib, pkgutil, traceback, os
 
+KEYS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "keys")
 PROVIDERS ={}
+
+def read_key(filename):
+    with open(os.path.join(KEYS_DIR, filename), encoding="utf-8") as f:
+        return f.read().strip()
 
 def load():
     PROVIDERS.clear()

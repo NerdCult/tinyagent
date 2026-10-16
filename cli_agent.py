@@ -17,9 +17,22 @@ for p in providers.summary():
 
 selection = int(input())      
 
-prov = providers.PROVIDERS[provs[selection]]     
+prov = providers.PROVIDERS[provs[selection]]
 
-print (prov)                              
+print (prov)
+
+print ("Please Select your model:") 
+
+x = 0  
+models = {}
+for m in prov['models']:
+    x = x + 1                
+    print (f"{x}. {m}")
+    models[x] = m
+
+model_selection = int(input())
+
+model = models[model_selection]
 
 sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.'   
 
@@ -27,9 +40,9 @@ agnt = Agent(prov, sys_prompt, 150)
 thinking = False
 replying = False
 while True:                                                                               
-    user = input(Fore.GREEN + '\n>>> ')   
+    user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
-        for a in agnt.chat(user):
+        for a in agnt.chat(user_input, model):
             if a['behavior'] == 'thinking':
                 if not thinking:
                     thinking = True

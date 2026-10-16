@@ -2,12 +2,9 @@
 from openai import OpenAI
 
 NAME = "Grok (xAI API)"
-DEFAULT_MODEL = "grok-4.7"
-
 
 def make_client():
     return OpenAI(base_url="https://api.x.ai/v1", api_key="asdfasd", timeout=600)
-
 
 def list_models(client):
     ids = [m.id for m in client.models.list().data]

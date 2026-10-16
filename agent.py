@@ -7,11 +7,11 @@ class Agent:
         self.context = deque(maxlen=context_length)
         self.sys_prompt = sys_prompt
 
-    def chat(self, message):
+    def chat(self, message, model):
         self.context.append({'role': 'user', 'content': message})
         
         stream = self.prov["client"].chat.completions.create(
-            model="gemma-4-12B-it-QAT-GGUF", 
+            model=model, 
             messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context),
             stream=True)
 

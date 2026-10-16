@@ -1,63 +1,74 @@
 from collections import deque
-from colorama import Fore, Back, Style, init
-import providers
 
-init(autoreset=True)
+class agent:
+    def __init__(self, provider, sys_prompt, context_length):
+        self.prov = provider
+        self.context = deque(maxlen=context_length)
+        self.sys_prompt = sys_prompt
 
-providers.load()
+    def chat(self, message):
+        self.context.append({'role': 'user', 'content': user})
+        try:
+            stream = self.prov["client"].chat.completions.create(
+                model="Gemma4 12b", 
+                messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context),
+                stream=True)
 
-print ("Please Select your provider:")
+            thinking, answering = False, False
 
-x = 0
-provs = {}
+            for chunk in stream:        
+                if not chunk.choices:
+                    continue
+                delta = chunk.choices[0].delta
+                # reasoning text (llama-server: reasoning_content, some APIs: reasoning). Not saved to history.
+                extra = getattr(delta, "model_extra", None) or {}
+                rtext = getattr(delta, "reasoning_content", None) or extra.get("reasoning_content")or extra.get ("reasoning")
+                if rtext:
+                    if not thinking:
+                        print (Fore.LIGHTRED_EX + '\nthinking> ')
+                        thinking = True
+                        answering = False
+                    print (Fore.LIGHTRED_EX + rtext, end= "")
+                if delta.content:
+                    if not answering:
+                        print (Fore.CYAN + '\nagent> ', end="")
+                        thinking = False
+                        answering = True
 
-for p in providers.summary():
-    x = x + 1
-    print (f"{x}. {p['id']}")
-    provs[x] = p['id']
+                    print (Fore.CYAN + delta.content, end= "")
 
-selection = int(input())
+                    self.context.append({'role': 'assistant', 'content': delta.content})
 
-prov = providers.PROVIDERS[provs[selection]]
+        except KeyboardInterrupt:
+            pass
 
-print (prov)
+if __name__ == "__main__":
+    from colorama import Fore, init
+    import providers
 
-context = deque(maxlen=150)
-sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers unless a longer explaination is specifically warranted.'
+    init(autoreset=True)
 
-while True:
-    user = input(Fore.GREEN + '\n>>> ')
-    context.append({'role': 'user', 'content': user})
-    try:
-        stream = prov["client"].chat.completions.create(
-            model="Gemma4 12b", 
-            messages=[{'role': 'system', 'content': sys_prompt}] + list(context),
-            stream=True)
-        
-        content, calls, thinking, answering = "", {}, False, False
+    providers.load()
 
-        for chunk in stream:        
-            if not chunk.choices:
-                continue
-            delta = chunk.choices[0].delta
-            # reasoning text (llama-server: reasoning_content, some APIs: reasoning). Not saved to history.
-            extra = getattr(delta, "model_extra", None) or {}
-            rtext = getattr(delta, "reasoning_content", None) or extra.get("reasoning_content")or extra.get("reasoning")
-            if rtext:
-                if not thinking:
-                    print (Fore.LIGHTRED_EX + '\nthinking> ')
-                    thinking = True
-                    answering = False
-                print (Fore.LIGHTRED_EX + rtext, end= "")
-            if delta.content:
-                if not answering:
-                    print (Fore.CYAN + '\nagent> ', end="")
-                    thinking = False
-                    answering = True
+    print ("Please Select your provider:")
 
-                print (Fore.CYAN + delta.content, end= "")
+    x = 0
+    provs = {}
+    for p in providers.summary():
+        x = x + 1
+        print (f"{x}. {p['id']}")
+        provs[x] = p['id']
 
-                context.append({'role': 'assistant', 'content': delta.content})
-    
-    except KeyboardInterrupt:
-        pass
+    selection = int(input())
+
+    prov = providers.PROVIDERS[provs[selection]]
+
+    print (prov)
+
+    sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.'
+
+    agnt = agent(prov, sys_prompt, 150)
+
+    while True:
+        user = input(Fore.GREEN + '\n>>> ')
+        agnt.chat(user)

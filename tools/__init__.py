@@ -21,3 +21,21 @@ def load():
             print(f"[tools] failed to load {mod_info.name}:")
             traceback.print_exc()
     print(f"[tools] loaded: {', '.join(REGISTRY) or 'none'}")
+
+def schemas():
+    return [{"type": "function", "function": s} for s, _ in REGISTRY.values()]
+
+def run_tool(name, args_json):
+    entry = REGISTRY.get(name)
+    if not entry:
+        return json.dumps({"error": f"unknown tool {name}"})
+    try:
+        args = json.loads(args_json or "{}")
+        out = json.dumps(entry[1](**args), ensure_ascii=False, default=str)
+        if len(out) > MAX_RESULT:
+            out = out[:MAX_RESULT] + f"... [TRUNCATED: result was {len(out)} chars, limit {MAX_RESULT}. Request a smaller piece.]"
+        return out
+    except Exception as e:
+        return json.dumps({"error": f"{type(e).__name__}: {e}"})
+
+load()

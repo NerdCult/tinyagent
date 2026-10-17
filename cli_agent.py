@@ -55,12 +55,12 @@ new_sp = input()
 if new_sp != '':
     sys_prompt = new_sp
 
-agnt = Agent(prov, context_provider, sys_prompt, 150)                 
+agnt = Agent(prov, context_provider, sys_prompt)                 
 thinking = False
 replying = False
 using_tool = False
 
-while True:                                                                               
+while True:                                                    
     user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
         for a in agnt.chat(user_input, model):
@@ -89,8 +89,8 @@ while True:
                     thinking = False
                     replying = False
                     using_tool = True
-                    print (Fore.LIGHTWHITE_EX + "tool> ", end="")
-                print (Fore.LIGHTYELLOW_EX + content, end="")
+                    print (Fore.LIGHTWHITE_EX + "\ntool> ", end="")
+                print (Fore.LIGHTYELLOW_EX + f'{a['tool'] or ""} > {content or "no content"}', end="")
 
     except KeyboardInterrupt:
         pass

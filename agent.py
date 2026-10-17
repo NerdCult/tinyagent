@@ -1,12 +1,11 @@
-from collections import deque
 import tools, threading
 
 tools.load()
 
-MAX_TOOL_CALLS = 10
+MAX_TOOL_CALLS = 1
 
 class Agent:
-    def __init__(self, provider, context, sys_prompt, context_length):
+    def __init__(self, provider, context, sys_prompt):
         self.prov = provider
         self.sys_prompt = sys_prompt
         self.context = context
@@ -14,15 +13,16 @@ class Agent:
     def chat(self, message, model):
         self.context.add_context('user', message)
         
-        stream = self.prov["client"].chat.completions.create(
-            model=model, 
-            messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),
-            tools=tools.schemas(),
-            stream=True)
 
-        content, calls = "", {}
 
         for _ in range(MAX_TOOL_CALLS + 1):
+            stream = self.prov["client"].chat.completions.create(
+                model=model, 
+                messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),
+                tools=tools.schemas(),
+                stream=True)
+
+            content, calls = "", {}
             for chunk in stream:        
                 if not chunk.choices:
                     continue
@@ -43,10 +43,9 @@ class Agent:
                     if tc.id: c["id"] = tc.id
                     if tc.function and tc.function.name: c["name"] += tc.function.name
                     if tc.function and tc.function.arguments: c["args"] += tc. function.arguments
-        
-            self.context.add_context('assistant', content)
 
             if not calls:
+                self.context.add_context('assistant', content)
                 break
         
             ordered = [calls[i] for i in sorted(calls)]
@@ -55,9 +54,9 @@ class Agent:
                 {"id": c["id"] or f"call_{i}", "type": "function",
                  "function": {"name": c["name"], "arguments": c["args"] or "{}"}}
                 for i, c in enumerate(ordered)])
+            
             for i, c in enumerate(ordered):
-                hidden = c["name"] in ("create_tool", "propose_code_change")
-                yield { 'behavior': 'tool call', 'content' : {f"\n`[{c['name']}: {'(staged for review)' if hidden else c    ['args']}]`\n"}}
+                yield { 'behavior': 'tool call', 'tool': c['name'],'content' : {f"\n`[{c['name']}: {c['args']}]`\n"}}
                 box = {}
                 def _run(name=c["name"], args=c["args"], box=box):
                     box["out"] = tools.run_tool(name, args)
@@ -65,4 +64,4 @@ class Agent:
                 worker.start()
                 while worker.is_alive():
                     worker.join(0.25)
-                self.context.add_tool_call( c["id"] or f"call_{i}", box.get("out", ""))
+                self.context.add_tool_result( c["id"] or f"call_{i}", box.get("out", ""))

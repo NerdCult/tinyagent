@@ -1,4 +1,7 @@
 from collections import deque
+import tools
+
+tools.load()
 
 class Agent:
     def __init__(self, provider, context, sys_prompt, context_length):
@@ -12,6 +15,7 @@ class Agent:
         stream = self.prov["client"].chat.completions.create(
             model=model, 
             messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),
+            tools=tools.schemas(),
             stream=True)
 
         content = ""

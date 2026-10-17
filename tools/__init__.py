@@ -38,4 +38,3 @@ def run_tool(name, args_json):
     except Exception as e:
         return json.dumps({"error": f"{type(e).__name__}: {e}"})
 
-load()

@@ -58,24 +58,39 @@ if new_sp != '':
 agnt = Agent(prov, context_provider, sys_prompt, 150)                 
 thinking = False
 replying = False
+using_tool = False
+
 while True:                                                                               
     user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
         for a in agnt.chat(user_input, model):
-            if a['behavior'] == 'thinking':
+            behavior = a['behavior']
+            content = a['content']
+            
+            if behavior == 'thinking':
                 if not thinking:
                     thinking = True
                     replying = False
+                    using_tool = False
                     print (Fore.LIGHTRED_EX + '\nthinking> ', end="")
-                print (Fore.LIGHTRED_EX + a['content'], end="")
+                print (Fore.LIGHTRED_EX + content, end="")
 
 
-            if a['behavior'] == 'replying':
+            if behavior == 'replying':
                 if not replying:
                     thinking = False
                     replying = True
+                    using_tool = False
                     print (Fore.CYAN + '\nagent> ', end="")
-                print (Fore.CYAN + a['content'], end="")
+                print (Fore.CYAN + content, end="")
+
+            if behavior == 'tool call':
+                if not using_tool:
+                    thinking = False
+                    replying = False
+                    using_tool = True
+                    print (Fore.LIGHTWHITE_EX + "tool> ", end="")
+                print (Fore.LIGHTYELLOW_EX + content, end="")
 
     except KeyboardInterrupt:
         pass

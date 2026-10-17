@@ -1,10 +1,12 @@
 from colorama import Fore, init  
 from agent import Agent                                                     
-import providers        
+import providers
+import context    
 
 init(autoreset=True)   
 
-providers.load()                        
+providers.load()
+context.load()               
 
 print ("Please Select your provider:")   
 
@@ -34,9 +36,28 @@ model_selection = int(input())
 
 model = models[model_selection]
 
-sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.'   
+print ('Please select a context tracker:')
+x = 0
+contexts = {}
+for c in context.summary():
+    x = x + 1
+    contexts[x] = c['name']
+    print (x, c['name'])
 
-agnt = Agent(prov, sys_prompt, 150)                 
+context_selection = int(input())
+
+context_provider = context.CONTEXTS[contexts[context_selection]]['context']
+
+sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.' 
+
+print (f'Current system prompt:\n{sys_prompt}\npress enter to keep or type a new system prompt:')
+
+new_sp = input()
+
+if new_sp != '':
+    sys_prompt = new_sp
+
+agnt = Agent(prov, context_provider, sys_prompt, 150)                 
 thinking = False
 replying = False
 while True:                                                                               

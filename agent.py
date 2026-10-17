@@ -1,19 +1,20 @@
 from collections import deque
-from colorama import Fore, init  
 
 class Agent:
-    def __init__(self, provider, sys_prompt, context_length):
+    def __init__(self, provider, context, sys_prompt, context_length):
         self.prov = provider
-        self.context = deque(maxlen=context_length)
         self.sys_prompt = sys_prompt
+        self.context = context
 
     def chat(self, message, model):
-        self.context.append({'role': 'user', 'content': message})
+        self.context.add_context('user', message)
         
         stream = self.prov["client"].chat.completions.create(
             model=model, 
-            messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context),
+            messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),
             stream=True)
+
+        content = ""
 
         for chunk in stream:        
             if not chunk.choices:
@@ -29,5 +30,7 @@ class Agent:
 
             if delta.content:
                 yield { 'behavior': 'replying', 'content': delta.content}
-                self.context.append({'role': 'assistant', 'content': delta.content})
+                content = content + delta.content
+        
+        self.context.add_context('assistant', content)
 

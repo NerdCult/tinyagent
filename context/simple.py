@@ -7,7 +7,7 @@ def make_context():
 
 class SimpleContext:
     def __init__(self):
-        self.memory = deque(maxlen=150)
+        self.memory = deque(maxlen=10)
 
 
     def get_context(self):
@@ -15,3 +15,7 @@ class SimpleContext:
 
     def add_context(self, role, content):
         self.memory.append({'role': role, 'content': content})
+
+    def reset(self, max_length):
+        self.memory.clear()
+        self.memory = deque(maxlen=max_length)

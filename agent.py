@@ -21,9 +21,9 @@ class Agent:
                 continue
 
             delta = chunk.choices[0].delta
-            # reasoning text (llama-server: reasoning_content, some APIs: reasoning). Not saved to history.
+
             extra = getattr(delta, "model_extra", None) or {}
-            rtext = getattr(delta, "reasoning_content", None) or extra.get("reasoning_content")or extra.get ("reasoning")
+            rtext = getattr(delta, "reasoning_content", None) or extra.get("reasoning_content") or extra.get ("reasoning")
 
             if rtext:
                 yield { 'behavior': 'thinking', 'content': rtext}

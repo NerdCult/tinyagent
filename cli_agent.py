@@ -21,8 +21,6 @@ selection = int(input())
 
 prov = providers.PROVIDERS[provs[selection]]
 
-print (prov)
-
 print ("Please Select your model:") 
 
 x = 0  

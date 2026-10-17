@@ -12,9 +12,6 @@ class Agent:
 
     def chat(self, message, model):
         self.context.add_context('user', message)
-        
-
-
         for _ in range(MAX_TOOL_CALLS + 1):
             stream = self.prov["client"].chat.completions.create(
                 model=model, 
@@ -50,10 +47,9 @@ class Agent:
         
             ordered = [calls[i] for i in sorted(calls)]
 
-            self.context.add_context('assistant', content or None,  [
-                {"id": c["id"] or f"call_{i}", "type": "function",
+            self.context.add_context_with_tool_calls('assistant', content or None,  [{"id": c["id"] or f"call_{i}", "type": "function",
                  "function": {"name": c["name"], "arguments": c["args"] or "{}"}}
-                for i, c in enumerate(ordered)])
+                for i, c in enumerate(ordered)] or [])
             
             for i, c in enumerate(ordered):
                 yield { 'behavior': 'tool call', 'tool': c['name'],'content' : {f"\n`[{c['name']}: {c['args']}]`\n"}}

@@ -2,7 +2,7 @@ import tools, threading
 
 tools.load()
 
-MAX_TOOL_CALLS = 1
+MAX_TOOL_CALLS = 10
 
 class Agent:
     def __init__(self, provider, context, sys_prompt):
@@ -12,7 +12,7 @@ class Agent:
 
     def chat(self, message, model):
         self.context.add_context('user', message)
-        for _ in range(MAX_TOOL_CALLS + 1):
+        for _ in range(MAX_TOOL_CALLS ):
             stream = self.prov["client"].chat.completions.create(
                 model=model, 
                 messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),

@@ -1,6 +1,20 @@
 import importlib, pkgutil, traceback
+import abc
+from typing import List
 
 CONTEXTS ={}
+
+class ContextProvider(abc.ABC):
+    @abc.abstractmethod
+    def get_context(self) -> List:
+        pass
+    @abc.abstractmethod
+    def add_context(self, role, content, tool_calls= None) -> None:
+        pass
+    @abc.abstractmethod
+    def add_tool_result(self, tool_call_id, content) -> None:
+        pass
+
 
 def load():
     CONTEXTS.clear()

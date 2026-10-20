@@ -47,7 +47,7 @@ class Agent:
         
             ordered = [calls[i] for i in sorted(calls)]
 
-            self.context.add_context_with_tool_calls('assistant', content or None,  [{"id": c["id"] or f"call_{i}", "type": "function",
+            self.context.add_context('assistant', content,  [{"id": c["id"] or f"call_{i}", "type": "function",
                  "function": {"name": c["name"], "arguments": c["args"] or "{}"}}
                 for i, c in enumerate(ordered)] or [])
             

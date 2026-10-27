@@ -11,3 +11,9 @@ class ContextProvider(abc.ABC):
     @abc.abstractmethod
     def add_tool_result(self, session_id: str, tool_call_id: str, content: str) -> None:
         pass
+    @abc.abstractmethod
+    def get_session_ids(self) -> List:
+        pass
+    @abc.abstractmethod
+    def add_session_id(self, id: str) ->  None:
+        pass

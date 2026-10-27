@@ -14,7 +14,7 @@ SCHEMA = {
 }
 
 
-def run(query, max_results=5):
+def run(query: str, max_results: int =5):
     with DDGS() as d:
         results = d.text(query, max_results=int(max_results))
     return [{"title": r.get("title"), "url": r.get("href"), "snippet": r.get("body")} for r in results]

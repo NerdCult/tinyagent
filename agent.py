@@ -2,6 +2,10 @@ import tools, threading
 from context.contextProvider import ContextProvider
 
 class AgentConfig:
+    model: str
+    session_id: str
+    context: ContextProvider
+    system_prompt: str
     def __init__(self, lm_provider, model_name: str, session_id: str, context: ContextProvider, system_prompt: str):
         self.provider = lm_provider
         self.model = model_name
@@ -12,19 +16,19 @@ class AgentConfig:
 MAX_TOOL_CALLS = 10
 
 class Agent:
-    def __init__(self, agentConfig):
+    def __init__(self, agentConfig: AgentConfig):
         self.prov = agentConfig.provider
         self.model = agentConfig.model
         self.sys_prompt = agentConfig.system_prompt
         self.context = agentConfig.context
         self.session_id = agentConfig.session_id
 
-    def chat(self, message):
+    def chat(self, message: string):
         self.context.add_context(self.session_id , 'user', message)
         for _ in range(MAX_TOOL_CALLS ):
             stream = self.prov["client"].chat.completions.create(
                 model=self.model, 
-                messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context(self.session_id )),
+                messages=[{'role': 'system', 'content': self.sys_prompt}] + self.context.get_context(self.session_id ),
                 tools=tools.schemas(),
                 stream=True)
 

@@ -12,7 +12,7 @@ SCHEMA = {
 }
 
 
-def run(url, max_chars=6000):
+def run(url: str, max_chars: int =6000):
     r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0 OpenAgent"})
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")

@@ -3,7 +3,7 @@ import importlib, json, os, pkgutil, sys, traceback
 TOOLS_DIR = os.path.dirname(__file__)
 
 REGISTRY = {}   # name -> (schema, fn)
-MAX_RESULT = 40000   # chars per tool result
+MAX_RESULT = 50_000   # chars per tool result
 
 def load(agentConfig):
     REGISTRY.clear()

@@ -34,4 +34,4 @@ def summary():
 
     
 def get(pid):
-    return PROVIDERS.get(pid) or PROVIDERS.get("local") or next(iter(PROVIDERS.values()))
+    return PROVIDERS.get(pid) or PROVIDERS.get("openAiApi") or next(iter(PROVIDERS.values()))

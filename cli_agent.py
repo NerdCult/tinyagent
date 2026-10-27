@@ -1,12 +1,12 @@
 from colorama import Fore, init  
-from agent import Agent                                                     
+from agent import Agent, AgentConfig                                                    
 import providers
-import context    
+from context.simple import SimpleContext  
+import tools
 
 init(autoreset=True)   
 
-providers.load()
-context.load()               
+providers.load()           
 
 print ("Please Select your provider:")   
 
@@ -34,28 +34,13 @@ model_selection = int(input())
 
 model = models[model_selection]
 
-print ('Please select a context tracker:')
-x = 0
-contexts = {}
-for c in context.summary():
-    x = x + 1
-    contexts[x] = c['name']
-    print (x, c['name'])
-
-context_selection = int(input())
-
-context_provider = context.CONTEXTS[contexts[context_selection]]['context']
-
 sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.' 
 
-print (f'Current system prompt:\n{sys_prompt}\npress enter to keep or type a new system prompt:')
+agentConfig = AgentConfig(prov, model, 'default', SimpleContext(), sys_prompt)
 
-new_sp = input()
+tools.load(agentConfig)
 
-if new_sp != '':
-    sys_prompt = new_sp
-
-agnt = Agent(prov, context_provider, sys_prompt)                 
+agnt = Agent(agentConfig)                 
 
 while True:
     thinking = False
@@ -63,7 +48,7 @@ while True:
     using_tool = False                                                
     user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
-        for a in agnt.chat(user_input, model):
+        for a in agnt.chat(user_input):
             behavior = a['behavior']
             content = a['content']
             

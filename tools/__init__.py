@@ -5,7 +5,7 @@ TOOLS_DIR = os.path.dirname(__file__)
 REGISTRY = {}   # name -> (schema, fn)
 MAX_RESULT = 40000   # chars per tool result
 
-def load():
+def load(agentConfig):
     REGISTRY.clear()
     importlib.invalidate_caches()
     for mod_info in pkgutil.iter_modules([TOOLS_DIR]):

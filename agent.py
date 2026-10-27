@@ -1,21 +1,30 @@
 import tools, threading
+from context.contextProvider import ContextProvider
 
-tools.load()
+class AgentConfig:
+    def __init__(self, lm_provider, model_name: str, session_id: str, context: ContextProvider, system_prompt: str):
+        self.provider = lm_provider
+        self.model = model_name
+        self.session_id = session_id
+        self.context = context
+        self.system_prompt = system_prompt
 
 MAX_TOOL_CALLS = 10
 
 class Agent:
-    def __init__(self, provider, context, sys_prompt):
-        self.prov = provider
-        self.sys_prompt = sys_prompt
-        self.context = context
+    def __init__(self, agentConfig):
+        self.prov = agentConfig.provider
+        self.model = agentConfig.model
+        self.sys_prompt = agentConfig.system_prompt
+        self.context = agentConfig.context
+        self.session_id = agentConfig.session_id
 
-    def chat(self, message, model):
-        self.context.add_context('user', message)
+    def chat(self, message):
+        self.context.add_context(self.session_id , 'user', message)
         for _ in range(MAX_TOOL_CALLS ):
             stream = self.prov["client"].chat.completions.create(
-                model=model, 
-                messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context()),
+                model=self.model, 
+                messages=[{'role': 'system', 'content': self.sys_prompt}] + list(self.context.get_context(self.session_id )),
                 tools=tools.schemas(),
                 stream=True)
 
@@ -42,12 +51,12 @@ class Agent:
                     if tc.function and tc.function.arguments: c["args"] += tc. function.arguments
 
             if not calls:
-                self.context.add_context('assistant', content)
+                self.context.add_context(self.session_id , 'assistant', content)
                 break
         
             ordered = [calls[i] for i in sorted(calls)]
 
-            self.context.add_context('assistant', content,  [{"id": c["id"] or f"call_{i}", "type": "function",
+            self.context.add_context(self.session_id, 'assistant', content,  [{"id": c["id"] or f"call_{i}", "type": "function",
                  "function": {"name": c["name"], "arguments": c["args"] or "{}"}}
                 for i, c in enumerate(ordered)] or [])
             
@@ -60,4 +69,4 @@ class Agent:
                 worker.start()
                 while worker.is_alive():
                     worker.join(0.25)
-                self.context.add_tool_result( c["id"] or f"call_{i}", box.get("out", ""))
+                self.context.add_tool_result(self.session_id , c["id"] or f"call_{i}", box.get("out", ""))

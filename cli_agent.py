@@ -56,11 +56,11 @@ if new_sp != '':
     sys_prompt = new_sp
 
 agnt = Agent(prov, context_provider, sys_prompt)                 
-thinking = False
-replying = False
-using_tool = False
 
-while True:                                                    
+while True:
+    thinking = False
+    replying = False
+    using_tool = False                                                
     user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
         for a in agnt.chat(user_input, model):

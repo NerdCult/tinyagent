@@ -29,8 +29,14 @@ class Agent:
                     yield { 'behavior': 'replying', 'content': event.content}
                     content = content + event.content
 
-            self.context.add_context(self.session_id , 'assistant', content)
-            break
+                if event.event_type == "tool_call":
+                    calls = event.tool_calls
+                    for i, call in calls.items():
+                        yield{ 'behavior': 'tool call', 'tool': call.name,'content' : {f"\n`[{call.name}: {call.args}]`\n"}}
+
+            if not calls:
+                self.context.add_context(self.session_id , 'assistant', content)
+                break
 
             #     for tc in event.tool_calls or []:
             #         c = calls.setdefault(tc.index, {"id": "", "name": "", "args": ""})

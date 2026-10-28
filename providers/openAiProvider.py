@@ -47,4 +47,10 @@ class OpenAIProvider(Provider):
                 if call.id: c.id = call.id
                 if call.function and call.function.name: c.name = call.function.name
                 if call.function and call.function.arguments: c.args = call.function.arguments
-                print (f"tool added")
+
+            if calls:
+                yield StreamEvent(
+                    event_type="tool_call",
+                    tool_calls=calls,
+                    raw=chunk
+                )

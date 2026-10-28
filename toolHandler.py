@@ -1,5 +1,6 @@
 from providers.provider import ToolCall
 from dataclasses import dataclass
+import tools, threading
 
 @dataclass
 class ToolCallResult:
@@ -7,8 +8,8 @@ class ToolCallResult:
     result: str
 
 
-def handle_tool_calls(calls: dict[int, ToolCall]) -> list[ToolCallResult]:
-
+def handle_tool_calls(calls: dict[int, ToolCall]):
+    
     ordered = [calls[i] for i in sorted(calls)]
            
     for i, c in enumerate(ordered):
@@ -23,3 +24,5 @@ def handle_tool_calls(calls: dict[int, ToolCall]) -> list[ToolCallResult]:
                     id=c.id,
                     result=box.get("out", "")
                 )
+        for result in _run():
+            yield result

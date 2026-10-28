@@ -1,6 +1,5 @@
-import tools, threading
-
 from toolHandler import handle_tool_calls
+import tools
 
 MAX_TOOL_CALLS = 10
 
@@ -34,13 +33,18 @@ class Agent:
                 if event.event_type == "tool_call":
                     calls = event.tool_calls
                     for i, call in calls.items():
-                        self.context.add_context(self.session_id, 'assistant', content,  [{"id": call.id or f"call_{i}", "type": "function", "function": {"name": call.name, "arguments": call.args or "{}"}}])
                         yield{ 'behavior': 'tool call', 'tool': call.name,'content' : {f"\n`[{call.name}: {call.args}]`\n"}}
 
             if not calls:
                 self.context.add_context(self.session_id , 'assistant', content)
                 break
 
-            print (type(calls))
+            ordered = [calls[i] for i in sorted(calls)]
+
+            self.context.add_context(self.session_id, 'assistant', content,  [{"id": c.id or f"call_{i}", "type": "function",
+                 "function": {"name": c.name, "arguments": c.args or "{}"}}
+                for i, c in enumerate(ordered)] or [])
+                
             for result in handle_tool_calls(calls) or []:
                 self.context.add_tool_result(self.session_id , result.id, result.result)
+                print('result added')

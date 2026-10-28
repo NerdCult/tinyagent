@@ -1,31 +1,32 @@
 from colorama import Fore, init  
-from agent import Agent, AgentConfig                                                    
-import providers
+from agent import Agent
+from config import AgentConfig                                                    
+import connections
 from context.simple import SimpleContext  
 import tools
 
 init(autoreset=True)   
 
-providers.load()           
+connections.load()           
 
 print ("Please Select your provider:")   
 
 x = 0                                                                                     
-provs = {}                                                                                
-for p in providers.summary():                                                             
+connects = {}                                                                                
+for p in connections.summary():                                                             
     x = x + 1                                                                             
     print (f"{x}. {p['id']}")                                                             
-    provs[x] = p['id']           
+    connects[x] = p['id']           
 
 selection = int(input())      
 
-prov = providers.PROVIDERS[provs[selection]]
+connection = connections.CONNECTIONS[connects[selection]]
 
 print ("Please Select your model:") 
 
 x = 0  
 models = {}
-for m in prov['models']:
+for m in connection['models']:
     x = x + 1                
     print (f"{x}. {m}")
     models[x] = m
@@ -34,9 +35,13 @@ model_selection = int(input())
 
 model = models[model_selection]
 
+client = connection['make_provider'](connection['client'], model)
+
+print('made provider')
+
 sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.' 
 
-agentConfig = AgentConfig(prov, model, 'default', SimpleContext(), sys_prompt)
+agentConfig = AgentConfig(client, 'default', SimpleContext(), sys_prompt)
 
 tools.load(agentConfig)
 

@@ -16,13 +16,11 @@ def handle_tool_calls(calls: dict[int, ToolCall]):
         box = {}
         def _run(name=c.name, args=c.args, box=box):
             box["out"] = tools.run_tool(name, args)
-            worker = threading.Thread(target=_run, daemon=True)
-            worker.start()
-            while worker.is_alive():
-                worker.join(0.25)
-                yield ToolCallResult(
+        worker = threading.Thread(target=_run, daemon=True)
+        worker.start()
+        while worker.is_alive():
+            worker.join(0.25)
+        yield ToolCallResult(
                     id=c.id,
                     result=box.get("out", "")
                 )
-        for result in _run():
-            yield result

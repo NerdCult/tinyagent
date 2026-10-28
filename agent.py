@@ -33,6 +33,8 @@ class Agent:
                 if event.event_type == "tool_call":
                     calls = event.tool_calls
                     for i, call in calls.items():
+                        print (f"name {call.name}")
+                        print (f"args {call.args}")
                         yield{ 'behavior': 'tool call', 'tool': call.name,'content' : {f"\n`[{call.name}: {call.args}]`\n"}}
 
             if not calls:

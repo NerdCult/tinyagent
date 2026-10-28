@@ -1,4 +1,4 @@
-from providers.provider import Provider, StreamEvent
+from providers.provider import Provider, StreamEvent, ToolCall
 
 class OpenAIProvider(Provider):
     def __init__(self, client, model_name):
@@ -12,6 +12,7 @@ class OpenAIProvider(Provider):
             tools=tools,
             stream=True)
 
+        calls = {}
         for chunk in stream:
             if not chunk.choices:
                 yield StreamEvent(
@@ -36,3 +37,14 @@ class OpenAIProvider(Provider):
                     content=delta.content,
                     raw=chunk
                 )
+
+            for call in delta.tool_calls or []:
+                c = calls.setdefault(call.index, ToolCall(
+                    id="",
+                    name="",
+                    args=None
+                ))
+                if call.id: c.id = call.id
+                if call.function and call.function.name: c.name = call.function.name
+                if call.function and call.function.arguments: c.args = call.function.arguments
+                print (f"tool added")

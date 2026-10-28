@@ -29,7 +29,8 @@ class Agent:
                     yield { 'behavior': 'replying', 'content': event.content}
                     content = content + event.content
 
-        self.context.add_context(self.session_id , 'assistant', content)
+            self.context.add_context(self.session_id , 'assistant', content)
+            break
 
             #     for tc in event.tool_calls or []:
             #         c = calls.setdefault(tc.index, {"id": "", "name": "", "args": ""})

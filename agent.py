@@ -40,11 +40,10 @@ class Agent:
                 self.context.add_context(self.session_id , 'assistant', content)
                 break
 
-            ordered = [calls[i] for i in sorted(calls)]
 
-            self.context.add_context(self.session_id, 'assistant', content,  [{"id": c.id or f"call_{i}", "type": "function",
+            self.context.add_context(self.session_id, 'assistant', content,  [{"id": c.id , "type": "function",
                  "function": {"name": c.name, "arguments": c.args or "{}"}}
-                for i, c in enumerate(ordered)] or [])
+                for c in calls.values()] or [])
                 
             for result in handle_tool_calls(calls) or []:
                 self.context.add_tool_result(self.session_id , result.id, result.result)

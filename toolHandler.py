@@ -9,8 +9,7 @@ class ToolCallResult:
 
 
 def handle_tool_calls(calls):
-    for i in sorted(calls):
-        c = calls[i]
+    for c in calls.values():
         try:
             out = tools.run_tool(c.name, c.args)
         except Exception as e:

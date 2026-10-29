@@ -1,5 +1,5 @@
 from collections import deque
-from context.contextProvider import ContextProvider
+from context.context_provider import ContextProvider
 
 NAME = 'simple'
 

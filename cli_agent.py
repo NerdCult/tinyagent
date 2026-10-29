@@ -79,7 +79,7 @@ while True:
                     replying = False
                     using_tool = True
                     print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
-                print (Fore.LIGHTYELLOW_EX + f'{a['tool'] or ""} > {content or "no content"}', end="")
+                print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
 
     except KeyboardInterrupt:
         pass

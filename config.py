@@ -1,8 +1,8 @@
-from context.contextProvider import ContextProvider
+from context.context_provider import ContextProvider
 from providers.provider import Provider
 
 class AgentConfig:
-    model: str
+    provider: Provider
     session_id: str
     context: ContextProvider
     system_prompt: str

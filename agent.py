@@ -1,5 +1,6 @@
 from toolHandler import handle_tool_calls
 import tools
+from config import AgentConfig
 
 MAX_TOOL_CALLS = 10
 
@@ -10,7 +11,7 @@ class Agent:
         self.context = agentConfig.context
         self.session_id = agentConfig.session_id
 
-    def chat(self, message: string):
+    def chat(self, message: str):
         self.context.add_context(self.session_id , 'user', message)
         for _ in range(MAX_TOOL_CALLS ):
 
@@ -21,7 +22,7 @@ class Agent:
             content, calls = "", {}
             for event in events: 
                 if event.event_type  == "done":
-                    return
+                    continue
 
                 if event.event_type == "thinking":
                     yield { 'behavior': 'thinking', 'content': event.content}

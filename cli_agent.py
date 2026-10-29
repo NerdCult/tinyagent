@@ -65,7 +65,6 @@ while True:
                     print (Fore.LIGHTRED_EX + '\nthinking> ', end="")
                 print (Fore.LIGHTRED_EX + content, end="")
 
-
             if behavior == 'replying':
                 if not replying:
                     thinking = False

@@ -18,6 +18,7 @@ class OpenAIProvider(Provider):
                 yield StreamEvent(
                     event_type="done"
                 )
+                break
             
             delta = chunk.choices[0].delta
 

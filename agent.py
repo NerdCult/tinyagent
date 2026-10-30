@@ -33,8 +33,8 @@ class Agent:
 
                 if event.event_type == "tool_call":
                     calls = event.tool_calls
-                    for i, call in calls.items():
-                        yield{ 'behavior': 'tool call', 'tool': call.name,'content' : {f"\n`[{call.name}: {call.args}]`\n"}}
+                    for call in calls.values():
+                        yield{ 'behavior': 'tool call', 'tool': call.name,'content' : f"\n`{call.args}`\n"}
 
             if not calls:
                 self.context.add_context(self.session_id , 'assistant', content)

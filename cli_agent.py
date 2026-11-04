@@ -39,7 +39,7 @@ client = connection['make_provider'](connection['client'], model)
 
 print('made provider')
 
-sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted.' 
+sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted; if longer explaination is warranted open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. following the TL;DR provide the more in depth answer in a more direct facts only manner.' 
 
 agentConfig = AgentConfig(client, 'default', SimpleContext(), sys_prompt)
 

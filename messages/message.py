@@ -15,6 +15,7 @@ class Part:
     def to_openai(self) -> dict:
         """Adapt this Part into an OpenAI-wire part dict."""
         if self.type == "text":
+            text = self.data['text'] or ''
             return {"type": "text", "text": self.data.get("text", "")}
         elif self.type == "image_url":
             return {"type": "image_url", "image_url": self.data}
@@ -51,7 +52,7 @@ class Message:
             }
         result = {"role": self.role, "content": [p.to_openai() for p in self.content]}
         if self.tool_calls:
-            result["tool_calls"] = [tc.to_dict() for tc in self.tool_calls]
+            result["tool_calls"] = [{'id': tc.id, 'type': 'function', 'function': {'name': tc.name, 'arguments': tc.args}} for tc in self.tool_calls]
         return result
 
     def to_anthropic(self) -> dict:

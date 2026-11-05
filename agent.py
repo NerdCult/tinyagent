@@ -35,13 +35,13 @@ class Agent:
                 if event.event_type == "tool_call":
                     calls = event.tool_calls
                     for call in calls.values():
-                        yield { 'behavior': 'tool call', 'tool': call.name,'content' : f"\n`{call.args}`\n"}
+                        yield { 'behavior': 'tool_call', 'tool': call.name,'content' : f"\n`{call.args}`\n"}
 
             if not calls:
                 self.context.add_context(self.session_id , Message(role='assistant', content=[Part(type='text', data={'text': content})]))
                 break
 
-            self.context.add_context(self.session_id, Message(role='assistant', content=[Part(type='text', data={'text', content})], tool_calls=[ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] or []) )
+            self.context.add_context(self.session_id, Message(role='assistant', content=[], tool_calls=[ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] or []) )
                 
             for result in handle_tool_calls(calls) or []:
                 self.context.add_context(self.session_id , Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))

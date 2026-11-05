@@ -1,6 +1,6 @@
-from providers.provider import ToolCall
+from messages.tool_call import ToolCall
 from dataclasses import dataclass
-import tools, threading
+import tools
 
 @dataclass
 class ToolCallResult:
@@ -8,7 +8,7 @@ class ToolCallResult:
     result: str
 
 
-def handle_tool_calls(calls):
+def handle_tool_calls(calls: dict[int, ToolCall]):
     for c in calls.values():
         try:
             out = tools.run_tool(c.name, c.args)

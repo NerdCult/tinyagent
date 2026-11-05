@@ -25,12 +25,11 @@ def load(agentConfig):
 def schemas():
     return [{"type": "function", "function": s} for s, _ in REGISTRY.values()]
 
-def run_tool(name, args_json):
+def run_tool(name, args):
     entry = REGISTRY.get(name)
     if not entry:
         return json.dumps({"error": f"unknown tool {name}"})
     try:
-        args = json.loads(args_json or "{}")
         out = json.dumps(entry[1](**args), ensure_ascii=False, default=str)
         if len(out) > MAX_RESULT:
             out = out[:MAX_RESULT] + f"... [TRUNCATED: result was {len(out)} chars, limit {MAX_RESULT}. Request a smaller piece.]"

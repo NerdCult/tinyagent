@@ -4,6 +4,7 @@ from config import AgentConfig
 import connections
 from context.simple import SimpleContext  
 import tools
+from messages.message import Message
 
 init(autoreset=True)   
 
@@ -41,7 +42,9 @@ print('made provider')
 
 sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted; if longer explaination is warranted open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. following the TL;DR provide the more in depth answer in a more direct facts only manner.' 
 
-agentConfig = AgentConfig(client, 'default', SimpleContext(), sys_prompt)
+context = SimpleContext()
+context.set_system_prompt(sys_prompt)
+agentConfig = AgentConfig(client, 'default', context)
 
 tools.load(agentConfig)
 
@@ -53,7 +56,7 @@ while True:
     using_tool = False                                                
     user_input = input(Fore.GREEN + '\n>>> ')   
     try:                                                
-        for a in agnt.chat(user_input):
+        for a in agnt.chat(Message.from_text(role='user', text=user_input)):
             behavior = a['behavior']
             content = a['content']
             
@@ -73,13 +76,16 @@ while True:
                     print (Fore.CYAN + '\nagent> ', end="")
                 print (Fore.CYAN + content, end="")
 
-            if behavior == 'tool call':
+            if behavior == 'tool_call':
                 if not using_tool:
                     thinking = False
                     replying = False
                     using_tool = True
                     print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
                 print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
+
+            if behavior == 'done':
+                print (Fore.CYAN + f'\nagent stopped: {content}')
 
     except KeyboardInterrupt:
         pass

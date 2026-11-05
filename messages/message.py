@@ -12,16 +12,6 @@ class Part:
     type: str
     data: dict
 
-    def to_anthropic(self) -> dict:
-        """Adapt this Part into an Anthropic-wire part dict."""
-        if self.type == "text":
-            return {"type": "text", "text": self.data.get("text", "")}
-        elif self.type == "image":
-            return {"type": "image", "source": {
-                "type": "base64", "media_type": self.data.get("media_type"),
-                "data": self.data.get("data", "")
-            }}
-        return {"type": self.type, **self.data}
 
 RoleType = Literal["system", "user", "assistant", "tool"]
 @dataclass
@@ -31,24 +21,6 @@ class Message:
     content: list[Part]
     tool_call_id: str | None = None
     tool_calls: list[ToolCall] | None = None
-
-    def to_anthropic(self) -> dict:
-        if self.role == "assistant":
-            result = {"role": "assistant"}
-            result["content"] = [p.to_anthropic() for p in self.content]
-            if self.tool_calls:
-                result["tool_calls"] = [tc.to_anthropic() for tc in self.tool_calls]
-            return result
-
-        if self.role == "tool":
-            return {
-                "role": "user",
-                "content": [{"type": "tool_result",
-                             "tool_use_id": self.tool_call_id,
-                             "content": self.content[0].data.get("text", "")}]
-            }
-
-        return {"role": self.role, "content": [p.to_anthropic() for p in self.content]}
 
     @classmethod
     def from_text(cls, role: str, text: str) -> "Message":

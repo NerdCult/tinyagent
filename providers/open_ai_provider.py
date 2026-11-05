@@ -28,7 +28,7 @@ class OpenAIProvider(Provider):
                 "tool_call_id": message.tool_call_id,
                 "content": message.content[0].data.get("text", ""),
             }
-        result = {"role": message.role, "content": [self.part_to_openai(p) for p in message.content]}
+        result = {"role": message.role, "content": [self.part_to_openai(p) for p in message.content] if message.content else None}
         if message.tool_calls:
             result["tool_calls"] = [{'id': tc.id, 'type': 'function', 'function': {'name': tc.name, 'arguments': json.dumps(tc.args) if isinstance(tc.args, dict) else (tc.args or "{}")}} for tc in message.tool_calls]
         return result

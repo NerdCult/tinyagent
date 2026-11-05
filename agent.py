@@ -1,5 +1,4 @@
 from tool_handler import handle_tool_calls
-import tools
 from config import AgentConfig
 from messages.message import Message, Part
 from messages.tool_call import ToolCall
@@ -18,13 +17,10 @@ class Agent:
 
             messages = self.context.get_context(self.session_id)
 
-            events = self.prov.chat(messages, tools.schemas())
+            events = self.prov.chat(messages)
 
             content, calls = "", {}
-            for event in events: 
-                if event.event_type  == "done":
-                    continue
-
+            for event in events:
                 if event.event_type == "thinking":
                     yield { 'behavior': 'thinking', 'content': event.content} 
 
@@ -36,6 +32,9 @@ class Agent:
                     calls = event.tool_calls
                     for call in calls.values():
                         yield { 'behavior': 'tool_call', 'tool': call.name,'content' : f"\n`{call.args}`\n"}
+
+                if event.event_type  == "done":
+                    yield {'behavior': 'done', 'content': event.content}
 
             if not calls:
                 self.context.add_context(self.session_id , Message(role='assistant', content=[Part(type='text', data={'text': content})]))

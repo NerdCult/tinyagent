@@ -84,5 +84,8 @@ while True:
                     print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
                 print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
 
+            if behavior == 'done':
+                print (Fore.CYAN + f'\nagent stopped: {content}')
+
     except KeyboardInterrupt:
         pass

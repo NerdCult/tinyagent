@@ -1,4 +1,4 @@
-from providers.provider import ToolCall
+from messages.tool_call import ToolCall
 from dataclasses import dataclass
 import tools, threading
 

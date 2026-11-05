@@ -1,14 +1,23 @@
-from providers.provider import Provider, StreamEvent, ToolCall
+from providers.provider import Provider
+from messages.stream_events import StreamEvent
+from messages.tool_call import ToolCall
+from messages.message import Message
 
 class OpenAIProvider(Provider):
     def __init__(self, client, model_name):
         self.client = client
         self.model_name = model_name
+
+    def message_to_openai_format(self, messages: list[Message]):
+        openai_messages = []
+        for m in messages:
+            openai_messages.append(m.to_openai())
+        return openai_messages
     
-    def chat(self, messages: list[str], tools: list[object]):
+    def chat(self, messages: list[Message], tools: list[object]):
         stream = self.client.chat.completions.create(
             model=self.model_name, 
-            messages=messages,
+            messages=self.message_to_openai_format(messages),
             tools=tools,
             stream=True)
 
@@ -34,7 +43,7 @@ class OpenAIProvider(Provider):
 
             if delta.content:
                 yield StreamEvent(
-                    event_type="content",
+                    event_type="replying",
                     content=delta.content,
                     raw=chunk
                 )

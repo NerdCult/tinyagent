@@ -1,23 +1,47 @@
 from providers.provider import Provider
 from messages.stream_events import StreamEvent
 from messages.tool_call import ToolCall
-from messages.message import Message
+from messages.message import Message, Part
 
 class OpenAIProvider(Provider):
     def __init__(self, client, model_name):
         self.client = client
         self.model_name = model_name
 
-    def message_to_openai_format(self, messages: list[Message]):
+    
+    def part_to_openai(self, part: Part) -> dict:
+        """Adapt this Part into an OpenAI-wire part dict."""
+        if part.type == "text":
+            text = part.data['text'] or ''
+            return {"type": "text", "text": part.data.get("text", "")}
+        elif part.type == "image_url":
+            return {"type": "image_url", "image_url": part.data}
+        elif part.type == "audio":
+            return {"type": "audio", "audio": part.data}
+        return {"type": part.type, **part.data}
+    
+    def message_to_openai(self, message: Message) -> dict:
+        if message.role == "tool":
+            return {
+                "role": "tool",
+                "tool_call_id": message.tool_call_id,
+                "content": message.content[0].data.get("text", ""),
+            }
+        result = {"role": message.role, "content": [self.part_to_openai(p) for p in message.content]}
+        if message.tool_calls:
+            result["tool_calls"] = [{'id': tc.id, 'type': 'function', 'function': {'name': tc.name, 'arguments': tc.args}} for tc in message.tool_calls]
+        return result
+
+    def messages_to_openai(self, messages: list[Message]):
         openai_messages = []
         for m in messages:
-            openai_messages.append(m.to_openai())
+            openai_messages.append(self.message_to_openai(m))
         return openai_messages
     
     def chat(self, messages: list[Message], tools: list[object]):
         stream = self.client.chat.completions.create(
             model=self.model_name, 
-            messages=self.message_to_openai_format(messages),
+            messages=self.messages_to_openai(messages),
             tools=tools,
             stream=True)
 

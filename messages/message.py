@@ -12,17 +12,6 @@ class Part:
     type: str
     data: dict
 
-    def to_openai(self) -> dict:
-        """Adapt this Part into an OpenAI-wire part dict."""
-        if self.type == "text":
-            text = self.data['text'] or ''
-            return {"type": "text", "text": self.data.get("text", "")}
-        elif self.type == "image_url":
-            return {"type": "image_url", "image_url": self.data}
-        elif self.type == "audio":
-            return {"type": "audio", "audio": self.data}
-        return {"type": self.type, **self.data}
-
     def to_anthropic(self) -> dict:
         """Adapt this Part into an Anthropic-wire part dict."""
         if self.type == "text":
@@ -42,18 +31,6 @@ class Message:
     content: list[Part]
     tool_call_id: str | None = None
     tool_calls: list[ToolCall] | None = None
-
-    def to_openai(self) -> dict:
-        if self.role == "tool":
-            return {
-                "role": "tool",
-                "tool_call_id": self.tool_call_id,
-                "content": self.content[0].data.get("text", ""),
-            }
-        result = {"role": self.role, "content": [p.to_openai() for p in self.content]}
-        if self.tool_calls:
-            result["tool_calls"] = [{'id': tc.id, 'type': 'function', 'function': {'name': tc.name, 'arguments': tc.args}} for tc in self.tool_calls]
-        return result
 
     def to_anthropic(self) -> dict:
         if self.role == "assistant":

@@ -1,10 +1,10 @@
 from colorama import Fore, init  
-from agent import Agent
-from config import AgentConfig                                                    
-import connections
-from context.simple import SimpleContext  
-import tools
-from messages.message import Message
+from tinyagent.agent import Agent
+from tinyagent.config import AgentConfig                                                    
+from tinyagent import connections
+from tinyagent.context.simple import SimpleContext  
+from tinyagent import tools
+from tinyagent.messages.message import Message
 
 init(autoreset=True)   
 

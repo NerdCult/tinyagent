@@ -1,8 +1,9 @@
-from providers.provider import Provider
-from messages.stream_events import StreamEvent
-from messages.tool_call import ToolCall
-from messages.message import Message, Part
-import tools, json
+from tinyagent.providers.provider import Provider
+from tinyagent.messages.stream_events import StreamEvent
+from tinyagent.messages.tool_call import ToolCall
+from tinyagent.messages.message import Message, Part
+from tinyagent import tools
+import json
 
 class OpenAIProvider(Provider):
     def __init__(self, client, model_name):

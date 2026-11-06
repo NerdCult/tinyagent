@@ -1,5 +1,5 @@
-from context.context_provider import ContextProvider
-from providers.provider import Provider
+from tinyagent.context.context_provider import ContextProvider
+from tinyagent.providers.provider import Provider
 
 class AgentConfig:
     provider: Provider

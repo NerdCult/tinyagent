@@ -1,6 +1,6 @@
 import importlib, pkgutil, traceback, os
 
-KEYS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "keys")
+KEYS_DIR = './keys'
 CONNECTIONS ={}
 
 def read_key(filename):

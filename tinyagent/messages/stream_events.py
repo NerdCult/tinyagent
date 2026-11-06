@@ -1,6 +1,6 @@
 from dataclasses import dataclass 
 from typing import Literal, Any
-from messages.tool_call import ToolCall
+from tinyagent.messages.tool_call import ToolCall
 
 EventType = Literal["thinking", "replying", "tool_call", "done"]
 

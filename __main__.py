@@ -21,9 +21,9 @@ if __name__ == '__main__':
         print (f"{x}. {p['id']}")
         connects[x] = p['id']           
 
-        selection = int(input())      
+    selection = int(input())      
 
-        connection = connections.CONNECTIONS[connects[selection]]
+    connection = connections.CONNECTIONS[connects[selection]]
 
     print ("Please Select your model:") 
 

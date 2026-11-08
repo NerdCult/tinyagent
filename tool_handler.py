@@ -1,6 +1,6 @@
-from tinyagent.messages.tool_call import ToolCall
+from .messages.tool_call import ToolCall
 from dataclasses import dataclass
-from tinyagent import tools
+from . import tools
 
 @dataclass
 class ToolCallResult:

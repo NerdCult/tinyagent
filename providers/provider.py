@@ -1,7 +1,7 @@
 import abc
 from collections.abc import Iterator
-from tinyagent.messages.stream_events import StreamEvent
-from tinyagent.messages.message import Message
+from ..messages.stream_events import StreamEvent
+from ..messages.message import Message
 
 class Provider(abc.ABC):
     @abc.abstractmethod

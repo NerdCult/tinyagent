@@ -1,6 +1,6 @@
 from collections import deque
-from tinyagent.context.context_provider import ContextProvider
-from tinyagent.messages.message import Message, Part
+from .context_provider import ContextProvider
+from ..messages.message import Message, Part
 
 NAME = 'simple'
 

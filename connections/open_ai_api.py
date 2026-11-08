@@ -1,6 +1,6 @@
 """Local llama-server (run_llama.bat)."""
 from openai import OpenAI
-from tinyagent.providers.open_ai_provider import OpenAIProvider
+from ..providers.open_ai_provider import OpenAIProvider
 
 NAME = "Local (llama-server)"
 

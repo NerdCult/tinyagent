@@ -1,7 +1,7 @@
 """xAI Grok API. Key is read from keys/grok (never commit that folder)."""
 from openai import OpenAI
-from tinyagent.connections import read_key
-from tinyagent.providers.open_ai_provider import OpenAIProvider
+from . import read_key
+from ..providers.open_ai_provider import OpenAIProvider
 
 NAME = "Grok (xAI API)"
 

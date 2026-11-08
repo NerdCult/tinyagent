@@ -1,6 +1,6 @@
 from collections import deque
-from context.context_provider import ContextProvider
-from messages.message import Message, Part
+from .context_provider import ContextProvider
+from ..messages.message import Message, Part
 
 NAME = 'simple'
 

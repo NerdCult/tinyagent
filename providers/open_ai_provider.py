@@ -1,8 +1,9 @@
-from providers.provider import Provider
-from messages.stream_events import StreamEvent
-from messages.tool_call import ToolCall
-from messages.message import Message, Part
-import tools, json
+from .provider import Provider
+from ..messages.stream_events import StreamEvent
+from ..messages.tool_call import ToolCall
+from ..messages.message import Message, Part
+from .. import tools 
+import json
 
 class OpenAIProvider(Provider):
     def __init__(self, client, model_name):

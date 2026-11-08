@@ -1,7 +1,7 @@
-from tool_handler import handle_tool_calls
-from config import AgentConfig
-from messages.message import Message, Part
-from messages.tool_call import ToolCall
+from .tool_handler import handle_tool_calls
+from .config import AgentConfig
+from .messages.message import Message, Part
+from .messages.tool_call import ToolCall
 
 MAX_TOOL_CALLS = 10
 

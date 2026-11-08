@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from messages.message import Message
+from ..messages.message import Message
 
 class ContextProvider(abc.ABC):
     @abc.abstractmethod

@@ -1,11 +1,11 @@
 """Local llama-server (run_llama.bat)."""
 from openai import OpenAI
-from providers.open_ai_provider import OpenAIProvider
+from ..providers.open_ai_provider import OpenAIProvider
 
 NAME = "Local (llama-server)"
 
 def make_client():
-    return OpenAI(base_url="http://100.98.36.65:8080/v1", api_key="llama-server", timeout=600)
+    return OpenAI(base_url="http://127.0.0.1:8080/v1", api_key="llama-server", timeout=600)
     return OpenAI(base_url="http://localhost:11434/v1", api_key="llama-server", timeout=600) 
 
 def list_models(client):

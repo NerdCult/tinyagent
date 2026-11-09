@@ -1,7 +1,8 @@
 import os, json
+from pathlib import Path
 from .skill_manager import SkillManager
 
-DEFAULT_SKILLS_PATH = os.path.dirname(__file__) + './skills'
+DEFAULT_SKILLS_PATH = os.path.dirname(__file__) + '/skills'
 
 class SimpleSkillManager(SkillManager):
     def __init__(self, skill_folder: str = DEFAULT_SKILLS_PATH):
@@ -17,6 +18,12 @@ class SimpleSkillManager(SkillManager):
 
     def reload_skills(self):
         self.loaded_skills.clear()
+        print (self.skills_folder)
+        for file in Path(self.skills_folder).glob("*.json"):
+            print (file.name)
+            self.add_skill_to_menu(file.name)
+        print (self.menu)
+
 
     def skills(self):
         accumulater = ""
@@ -25,11 +32,17 @@ class SimpleSkillManager(SkillManager):
         current = f"{self.menu_preamble}\n { accumulater }"
         return current
 
-    def load_skill(self, skill_name):
-        self.get_skill_from_file(f'{self.skills_folder}/{skill_name}')
+    def load_skill(self, skill_name: str):
+        with open(file=f'{self.skills_folder}/{skill_name}') as f:
+            t = f.read().strip()
+            s = json.loads(t)
+            self.loaded_skills[skill_name] = s['text']
 
-    def unload_skill(self, skill_name):
+    def unload_skill(self, skill_name: str):
         self.loaded_skills.pop(skill_name)
 
-    def get_skill_from_file(self,file_path: str):
-        pass
+    def add_skill_to_menu(self, skill_name: str):
+        with open(file=f'{self.skills_folder}/{skill_name}') as f:
+            t = f.read().strip()
+            s = json.loads(t)
+            self.menu[skill_name] = s['description']

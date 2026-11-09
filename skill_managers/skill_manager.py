@@ -1,8 +1,12 @@
 import abc
 
-class SkillManger(abc.ABC):
+class SkillManager(abc.ABC):
     @abc.abstractmethod
-    def skill_menu(self):
+    def skills(self):
+        pass
+
+    @abc.abstractmethod
+    def reload_skills(self):
         pass
 
     @abc.abstractmethod

@@ -9,11 +9,6 @@ class ContextProvider(abc.ABC):
     def get_context(self, ) -> list[Message]:
         pass
     @abc.abstractmethod
-    def add_context(self, session_id: str, message: Message ) -> None:
+    def add_context(self, message: Message ) -> None:
         pass
-    @abc.abstractmethod
-    def get_session_ids(self) -> list[str]:
-        pass
-    @abc.abstractmethod
-    def add_session_id(self, id: str) ->  None:
-        pass
+    

@@ -3,10 +3,12 @@ from .agent import Agent
 from .config import AgentConfig
 from .context.simple import SimpleContext 
 from .providers.open_ai import OpenAiProvider
+from .skill_managers.simple import SimpleSkillManager
 from . import tools 
 from . import OPEN_AI_URLS, cli
 
 if __name__ == '__main__':
+    skill_manager = SimpleSkillManager()
     print ('Welcome to the TinyAgent demo CLI.')
     api_selection = int(input ("Please Select your api type:\n1. OpenAI\n2. Anthropic\n")) 
 

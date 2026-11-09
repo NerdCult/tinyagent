@@ -7,7 +7,7 @@ MAX_TOOL_CALLS = 10
 
 class Agent:
     def __init__(self, agentConfig: AgentConfig):
-        self.prov = agentConfig.provider
+        self.client = agentConfig.client
         self.context = agentConfig.context
         self.session_id = agentConfig.session_id
 
@@ -17,10 +17,8 @@ class Agent:
 
             messages = self.context.get_context(self.session_id)
 
-            events = self.prov.chat(messages)
-
             content, calls = "", {}
-            for event in events:
+            for event in self.client.chat(messages):
                 if event.event_type == "thinking":
                     yield { 'behavior': 'thinking', 'content': event.content} 
 

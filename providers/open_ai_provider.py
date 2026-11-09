@@ -1,13 +1,14 @@
-from .provider import Provider
+from .provider import Provider, Client
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
 from ..messages.message import Message, Part
 from .. import tools 
 import json
+from openai import OpenAI
 
-class OpenAIProvider(Provider):
-    def __init__(self, client, model_name):
-        self.client = client
+class OpenAIClient(Client):
+    def __init__(self, provider, model_name):
+        self.provider = provider
         self.model_name = model_name
 
     
@@ -41,7 +42,7 @@ class OpenAIProvider(Provider):
         return openai_messages
     
     def chat(self, messages: list[Message]):
-        stream = self.client.chat.completions.create(
+        stream = self.provider.chat.completions.create(
             model=self.model_name, 
             messages=self.messages_to_openai(messages),
             tools=tools.schemas(),
@@ -96,6 +97,13 @@ class OpenAIProvider(Provider):
                     c.args = {}   # or keep raw string if you want to be permissive
             yield StreamEvent(event_type="tool_call", tool_calls=calls, raw=chunk)
         
+class OpenAIProvider(Provider):
+    def __init__(self, url: str, key: str = '', timeout: int = 600):
+        self.connection = OpenAI(base_url=url, api_key=key, timeout=timeout)
         
-        
-        
+    def list_models(self):
+        ids = [m.id for m in self.connection.models.list().data]
+        return sorted(i for i in ids if 'image' not in i and 'imagine' not in i)
+
+    def make_client(self, model_name: str):
+        return OpenAIClient(self.connection, model_name)

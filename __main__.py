@@ -1,35 +1,54 @@
-from colorama import Fore, init  
+from pathlib import Path
 from .agent import Agent
 from .config import AgentConfig
-from . import connections
-from .context.simple import SimpleContext  
-from . import tools
-from .messages.message import Message
-
-init(autoreset=True)   
-
-connections.load()       
+from .context.simple import SimpleContext 
+from .providers.open_ai_provider import OpenAIProvider
+from . import tools 
+from . import OPEN_AI_URLS, cli
 
 if __name__ == '__main__':
+    print ('Welcome to the TinyAgent demo CLI.')
+    api_selection = int(input ("Please Select your api type:\n1. OpenAI\n2. Anthropic\n")) 
 
-    print ("Please Select your provider:")   
+    if api_selection == 1:
+        x = 0
+        urls = {}
 
-    x = 0 
-    connects = {}     
-    for p in connections.summary():
-        x = x + 1
-        print (f"{x}. {p['id']}")
-        connects[x] = p['id']           
+        print ('Please select url or enter 0 to manually enter: ')
+        for api in OPEN_AI_URLS:
+            x = x +1
+            urls[x] = {'name': api, 'url':OPEN_AI_URLS[api]}
+            print (f'{x}. {api}: {OPEN_AI_URLS[api]}')  
 
-    selection = int(input())      
+    else:
+        print ('Only OpenAI currently supported')
+        exit()
 
-    connection = connections.CONNECTIONS[connects[selection]]
+    url_selection = int (input ())
+    if url_selection == 0:
+        url = input ('Please enter the desired url (ex. https://127.0.0.1:8080/v1): ')
+        key = input ('Please enter your api key or hit enter if one is not needed: ')
+    else:
+        url = urls[url_selection]['url']
+    
+        key_path = f'./keys/{urls[url_selection]['name']}'
+
+        print (f'Checking for key file at {key_path}')
+
+        if Path.is_file(key_path):
+            with open(key_path, encoding="utf-8") as f:
+                key = f.read().strip()
+        else:
+            key = input ('Key file was not found, Please enter your key or just hit enter if no key is needed:')  or 'no key'
+        
+    if api_selection == 1:
+        provider = OpenAIProvider(url, key)
 
     print ("Please Select your model:") 
 
     x = 0  
     models = {}
-    for m in connection['models']:
+    for m in provider.list_models():
         x = x + 1                
         print (f"{x}. {m}")
         models[x] = m
@@ -38,13 +57,15 @@ if __name__ == '__main__':
 
     model = models[model_selection]
 
-    client = connection['make_provider'](connection['client'], model)
+    client = provider.make_client(model)
 
-    print('made provider')
+    sys_prompt = 'You are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers unless a longer explaination is specifically warranted. If a longer explaination is warranted, open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. Following the TL;DR provide the complete answer in a direct, state the facts manner.' 
 
-    sys_prompt = 'you are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers   unless a longer explaination is specifically warranted; if longer explaination is warranted open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. following the TL;DR provide the more in depth answer in a more direct facts only manner.' 
+    print (f'default system prompt: {sys_prompt}')
 
-    context = SimpleContext()
+    new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
+
+    context = SimpleContext(50)
     context.set_system_prompt(sys_prompt)
     agentConfig = AgentConfig(client, 'default', context)
 
@@ -52,42 +73,4 @@ if __name__ == '__main__':
 
     agnt = Agent(agentConfig)                 
 
-    while True:
-        thinking = False
-        replying = False
-        using_tool = False                                                
-        user_input = input(Fore.GREEN + '\n>>> ')   
-        try:                                                
-            for a in agnt.chat(Message.from_text(role='user', text=user_input)):
-                behavior = a['behavior']
-                content = a['content']
-            
-                if behavior == 'thinking':
-                    if not thinking:
-                        thinking = True
-                        replying = False
-                        using_tool = False
-                        print (Fore.LIGHTRED_EX + '\nthinking> ', end="")
-                    print (Fore.LIGHTRED_EX + content, end="")
-
-                if behavior == 'replying':
-                    if not replying:
-                        thinking = False
-                        replying = True
-                        using_tool = False
-                        print (Fore.CYAN + '\nagent> ', end="")
-                    print (Fore.CYAN + content, end="")
-
-                if behavior == 'tool_call':
-                    if not using_tool:
-                        thinking = False
-                        replying = False
-                        using_tool = True
-                        print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
-                    print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
-
-                if behavior == 'done':
-                    print (Fore.CYAN + f'\nagent turn ended: {content}')
-
-        except KeyboardInterrupt:
-            pass
+    cli(agnt)

@@ -7,7 +7,6 @@ class ToolCallResult:
     id: str
     result: str
 
-
 def handle_tool_calls(calls: dict[int, ToolCall]):
     for c in calls.values():
         try:

@@ -2,7 +2,7 @@ from pathlib import Path
 from .agent import Agent
 from .config import AgentConfig
 from .context.simple import SimpleContext 
-from .providers.open_ai_provider import OpenAIProvider
+from .providers.open_ai import OpenAiProvider
 from . import tools 
 from . import OPEN_AI_URLS, cli
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             key = input ('Key file was not found, Please enter your key or just hit enter if no key is needed:')  or 'no key'
         
     if api_selection == 1:
-        provider = OpenAIProvider(url, key)
+        provider = OpenAiProvider(url, key)
 
     print ("Please Select your model:") 
 

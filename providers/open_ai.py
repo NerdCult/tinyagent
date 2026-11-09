@@ -1,5 +1,6 @@
 from openai import OpenAI
 import json
+from collections.abc import Iterator
 from .provider import Provider, Client
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
@@ -7,7 +8,7 @@ from ..messages.message import Message, Part
 from .. import tools 
 
 class OpenAIClient(Client):
-    def __init__(self, provider, model_name):
+    def __init__(self, provider: Provider, model_name: str):
         self.provider = provider
         self.model_name = model_name
     
@@ -38,7 +39,7 @@ class OpenAIClient(Client):
             openai_messages.append(self.message_to_openai(m))
         return openai_messages
     
-    def chat(self, messages: list[Message]) -> list[StreamEvent]:
+    def chat(self, messages: list[Message]) -> Iterator[StreamEvent]:
         stream = self.provider.chat.completions.create(
             model=self.model_name, 
             messages=self.messages_to_openai(messages),

@@ -6,7 +6,7 @@ class ContextProvider(abc.ABC):
     def set_system_prompt(self, system_prompt: str) -> None:
         pass
     @abc.abstractmethod
-    def get_context(self, session_id : str) -> List:
+    def get_context(self, ) -> list[Message]:
         pass
     @abc.abstractmethod
     def add_context(self, session_id: str, message: Message ) -> None:

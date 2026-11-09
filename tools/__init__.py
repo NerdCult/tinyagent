@@ -18,9 +18,7 @@ def load(agentConfig):
             for schema, fn in pairs:
                 REGISTRY[schema["name"]] = (schema, fn)
         except Exception:
-            print(f"[tools] failed to load {mod_info.name}:")
             traceback.print_exc()
-    print(f"[tools] loaded: {', '.join(REGISTRY) or 'none'}")
 
 def schemas():
     return [{"type": "function", "function": s} for s, _ in REGISTRY.values()]

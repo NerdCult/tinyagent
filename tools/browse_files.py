@@ -2,7 +2,7 @@ from pathlib import Path
 
 SCHEMA = {
     "name": "browse_files",
-    "description": "View files on the system where this agentic application is running. Use first if the user requests you to look at files on their system.",
+    "description": "View the directories and file on the host machine where this agentic application is running.",
     "parameters": {
         "type": "object",
         "properties": {

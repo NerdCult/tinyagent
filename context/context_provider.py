@@ -1,5 +1,4 @@
 import abc
-from typing import List
 from ..messages.message import Message
 
 class ContextProvider(abc.ABC):
@@ -13,7 +12,7 @@ class ContextProvider(abc.ABC):
     def add_context(self, session_id: str, message: Message ) -> None:
         pass
     @abc.abstractmethod
-    def get_session_ids(self) -> List:
+    def get_session_ids(self) -> list[str]:
         pass
     @abc.abstractmethod
     def add_session_id(self, id: str) ->  None:

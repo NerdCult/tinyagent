@@ -1,9 +1,11 @@
 import abc
-from collections.abc import Iterator
-from ..messages.stream_events import StreamEvent
-from ..messages.message import Message
+from .client import Client
 
 class Provider(abc.ABC):
     @abc.abstractmethod
-    def chat(self, messages: list[Message]) -> Iterator[StreamEvent]:
+    def list_models() -> list[str]:
+        pass
+
+    @abc.abstractmethod
+    def make_client(model_name) -> Client:
         pass

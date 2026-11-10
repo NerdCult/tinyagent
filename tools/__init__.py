@@ -14,9 +14,13 @@ def load(agentConfig):
         full = f"{__name__}.{mod_info.name}"
         try:
             mod = importlib.reload(sys.modules[full]) if full in sys.modules else importlib.import_module(full)
-            pairs = getattr(mod, "TOOLS", None) or [(getattr(mod, "SCHEMA"), getattr(mod, "run"))]
-            for schema, fn in pairs:
-                REGISTRY[schema["name"]] = (schema, fn)
+            schema = getattr(mod, "SCHEMA")
+            
+            if hasattr(mod, "get_context_aware_run"):
+                fn = getattr(mod, "get_context_aware_run")(agentConfig.context)
+            else:
+                fn = getattr(mod, "run")
+            REGISTRY[schema["name"]] = (schema, fn)
         except Exception:
             traceback.print_exc()
 

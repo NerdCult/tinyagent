@@ -14,7 +14,7 @@ class Agent:
         self.context.add_context(message)
         for _ in range(MAX_TOOL_CALLS ):
 
-            messages = self.context.get_context(self)
+            messages = self.context.get_context()
 
             content, calls = "", {}
             for event in self.client.chat(messages):

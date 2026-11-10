@@ -18,19 +18,18 @@ class SimpleSkillManager(SkillManager):
 
     def reload_skills(self):
         self.loaded_skills.clear()
-        print (self.skills_folder)
         for file in Path(self.skills_folder).glob("*.json"):
-            print (file.name)
             self.add_skill_to_menu(file.name)
-        print (self.menu)
-
 
     def skills(self):
-        accumulater = ""
-        for text in self.loaded_skills.items():
-            accumulater = f'{accumulater}\n {text}'
-        current = f"{self.menu_preamble}\n { accumulater }"
-        return current
+        accumulater = f'{self.menu_preamble}\n available skills:'
+        for name, description in self.menu.items():
+            accumulater = f'{accumulater}\n {name}: {description}'
+
+        accumulater = f'{accumulater}\n loaded skills:'
+        for name, text in self.loaded_skills.items():
+            accumulater = f'{accumulater}\n {name}: {text}'
+        return accumulater
 
     def load_skill(self, skill_name: str):
         with open(file=f'{self.skills_folder}/{skill_name}') as f:

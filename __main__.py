@@ -8,7 +8,6 @@ from . import tools
 from . import OPEN_AI_URLS, cli
 
 if __name__ == '__main__':
-    skill_manager = SimpleSkillManager()
     print ('Welcome to the TinyAgent demo CLI.')
     api_selection = int(input ("Please Select your api type:\n1. OpenAI\n2. Anthropic\n")) 
 
@@ -67,7 +66,7 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    context = SimpleContext(50)
+    context = SimpleContext(skill_manager=SimpleSkillManager(), max_length=50)
     context.set_system_prompt(sys_prompt)
     agentConfig = AgentConfig(client, 'default', context)
 

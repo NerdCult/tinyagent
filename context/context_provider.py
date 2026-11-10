@@ -11,4 +11,9 @@ class ContextProvider(abc.ABC):
     @abc.abstractmethod
     def add_context(self, message: Message ) -> None:
         pass
-    
+    @abc.abstractmethod
+    def load_skill(self, skill_name: str):
+        pass
+    @abc.abstractmethod
+    def unload_skill(self, skill_name):
+        pass

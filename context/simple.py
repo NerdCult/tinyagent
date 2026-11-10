@@ -15,10 +15,15 @@ class SimpleContext(ContextProvider):
         self.system_prompt = system_prompt
 
     def get_context(self):
-        system_prompt_message = Message(role='system', content=[Part(type='text', data={'text':self.system_prompt})])
+        system = f'{self.system_prompt}\n{self.skill_manager.skills()}'
+        system_prompt_message = Message(role='system', content=[Part(type='text', data={'text':system})])
         return [system_prompt_message] + list(self.memory)
 
     def add_context(self, message: Message):
         self.memory.append(message)
 
-
+    def load_skill(self, skill_name):
+        self.skill_manager.load_skill(skill_name=skill_name)
+        
+    def unload_skill(self, skill_name):
+        self.skill_manager.unload_skill(skill_name=skill_name)

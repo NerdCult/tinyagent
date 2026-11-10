@@ -6,14 +6,17 @@ class ContextProvider(abc.ABC):
     def set_system_prompt(self, system_prompt: str) -> None:
         pass
     @abc.abstractmethod
-    def get_context(self, session_id : str) -> List:
+    def get_context(self, ) -> list[Message]:
         pass
     @abc.abstractmethod
-    def add_context(self, session_id: str, message: Message ) -> None:
+    def add_context(self, message: Message ) -> None:
         pass
     @abc.abstractmethod
-    def get_session_ids(self) -> list[str]:
+    def load_skill(self, skill_name: str):
         pass
     @abc.abstractmethod
-    def add_session_id(self, id: str) ->  None:
+    def unload_skill(self, skill_name: str):
+        pass
+    @abc.abstractmethod
+    def create_skill(self, skill_name: str, description: str, text: str):
         pass

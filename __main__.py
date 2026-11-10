@@ -3,6 +3,7 @@ from .agent import Agent
 from .config import AgentConfig
 from .context.simple import SimpleContext 
 from .providers.open_ai import OpenAiProvider
+from .skill_managers.simple import SimpleSkillManager
 from . import tools 
 from . import OPEN_AI_URLS, cli
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    context = SimpleContext(50)
+    context = SimpleContext(skill_manager=SimpleSkillManager(), max_length=50)
     context.set_system_prompt(sys_prompt)
     agentConfig = AgentConfig(client, 'default', context)
 

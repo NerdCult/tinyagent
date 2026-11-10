@@ -16,3 +16,7 @@ class SkillManager(abc.ABC):
     @abc.abstractmethod
     def unload_skill(self, skill_name: str):
         pass
+
+    @abc.abstractmethod
+    def create_skill(self, skill_name: str, description: str, text: str):
+        pass

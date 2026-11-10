@@ -32,7 +32,11 @@ class SimpleSkillManager(SkillManager):
         return accumulater
 
     def load_skill(self, skill_name: str):
-        with open(file=f'{self.skills_folder}/{skill_name}') as f:
+        if skill_name.endswith('.json'):
+            sn = skill_name
+        else:
+            sn = skill_name + '.json'
+        with open(file=f'{self.skills_folder}/{sn}') as f:
             t = f.read().strip()
             s = json.loads(t)
             self.loaded_skills[skill_name] = s['text']
@@ -45,3 +49,9 @@ class SimpleSkillManager(SkillManager):
             t = f.read().strip()
             s = json.loads(t)
             self.menu[skill_name] = s['description']
+
+    def create_skill(self, skill_name: str, description: str, text: str):
+        with open(f'{self.skills_folder}/{skill_name}.json',mode='w') as f:
+            skill = {'description': description, 'text': text}
+            f.write(json.dumps(skill))
+        self.reload_skills()

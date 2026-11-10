@@ -27,3 +27,6 @@ class SimpleContext(ContextProvider):
         
     def unload_skill(self, skill_name):
         self.skill_manager.unload_skill(skill_name=skill_name)
+
+    def create_skill(self, skill_name, description, text):
+        self.skill_manager.create_skill(skill_name, description, text)

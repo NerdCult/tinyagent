@@ -6,7 +6,7 @@ from ..skill_managers.skill_manager import SkillManager
 NAME = 'simple'
 
 class SimpleContext(ContextProvider):
-    def __init__(self, skill_manager: SkillManager | None = None, max_length: int = 50):
+    def __init__(self, skill_manager: SkillManager, max_length: int = 50):
         self.memory = deque(maxlen=max_length)
         self.skill_manager = skill_manager
         self.system_prompt = ''

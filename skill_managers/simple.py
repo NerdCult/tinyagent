@@ -14,10 +14,10 @@ class SimpleSkillManager(SkillManager):
 
     def set_skills_folder(self, path: str):
         self.skills_folder = path
-        self.reload_skills
+        self.reload_skills()
 
     def reload_skills(self):
-        self.loaded_skills.clear()
+        self.menu.clear()
         for file in Path(self.skills_folder).glob("*.json"):
             self.add_skill_to_menu(file.name)
 
@@ -39,10 +39,14 @@ class SimpleSkillManager(SkillManager):
         with open(file=f'{self.skills_folder}/{sn}') as f:
             t = f.read().strip()
             s = json.loads(t)
-            self.loaded_skills[skill_name] = s['text']
+            self.loaded_skills[sn] = s['text']
 
     def unload_skill(self, skill_name: str):
-        self.loaded_skills.pop(skill_name)
+        if skill_name.endswith('.json'):
+            sn = skill_name
+        else:
+            sn = skill_name + '.json'
+        self.loaded_skills.pop(sn)
 
     def add_skill_to_menu(self, skill_name: str):
         with open(file=f'{self.skills_folder}/{skill_name}') as f:
@@ -51,7 +55,11 @@ class SimpleSkillManager(SkillManager):
             self.menu[skill_name] = s['description']
 
     def create_skill(self, skill_name: str, description: str, text: str):
-        with open(f'{self.skills_folder}/{skill_name}.json',mode='w') as f:
+        if skill_name.endswith('.json'):
+            sn = skill_name
+        else:
+            sn = skill_name + '.json'
+        with open(f'{self.skills_folder}/{sn}',mode='w') as f:
             skill = {'description': description, 'text': text}
             f.write(json.dumps(skill))
         self.reload_skills()

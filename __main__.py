@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
         print (f'Checking for key file at {key_path}')
 
-        if Path.is_file(key_path):
+        if Path(key_path).is_file():
             with open(key_path, encoding="utf-8") as f:
                 key = f.read().strip()
         else:
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
     context = SimpleContext(skill_manager=SimpleSkillManager(), max_length=50)
-    context.set_system_prompt(sys_prompt)
-    agentConfig = AgentConfig(client, 'default', context)
+    context.set_system_prompt(new_sys_prompt)
+    agentConfig = AgentConfig(client, context)
 
     tools.load(agentConfig)
 

@@ -1,4 +1,0 @@
-{"description": "Explains how to format and add new skills to this agentic app.",
-
-
-"text" : "Adding new skills requires a name, description (a short summary of what the skill is used for), and a text (the actual explaination of the skill). these three values have to be provided to the create_skill tool. name should be a written snake_case and related to the skill. description should be brief but clearly describe when and why to use the skill. text should provide clear guidance similar to what might be written in a skills.md."}

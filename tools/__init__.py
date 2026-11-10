@@ -5,6 +5,21 @@ TOOLS_DIR = os.path.dirname(__file__)
 REGISTRY = {}   # name -> (schema, fn)
 MAX_RESULT = 50_000   # chars per tool result
 
+
+# import importlib.util
+# import sys
+# from pathlib import Path
+
+# def load_tool_file(path: Path):
+#     name = f"tinyagent_tools.{path.stem}"
+#     spec = importlib.util.spec_from_file_location(name, path)
+#     if spec is None or spec.loader is None:
+#         raise ImportError(path)
+#     mod = importlib.util.module_from_spec(spec)
+#     sys.modules[name] = mod
+#     spec.loader.exec_module(mod)
+#     return mod
+
 def load(agentConfig):
     REGISTRY.clear()
     importlib.invalidate_caches()

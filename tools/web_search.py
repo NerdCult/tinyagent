@@ -2,7 +2,7 @@ from ddgs import DDGS
 
 SCHEMA = {
     "name": "web_search",
-    "description": "Search the web for additional information. Use this tool, in conjunction with teh fetch_page tool, liberally to make sure information is up to date. Returns titles, URLs and snippets. use the fetch_page tool to open a link and view the full page.",
+    "description": "Search the web for additional information. Use this tool, in conjunction with the fetch_page tool, liberally to make sure information is up to date. Returns titles, URLs and snippets. use the fetch_page tool to open a link and view the full page.",
     "parameters": {
         "type": "object",
         "properties": {

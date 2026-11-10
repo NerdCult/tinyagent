@@ -8,7 +8,7 @@ class SimpleSkillManager(SkillManager):
     def __init__(self, skill_folder: str = DEFAULT_SKILLS_PATH):
         self.skills_folder = skill_folder
         self.menu_preamble = 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'
-        self.menu = {}
+        self.menu = ''
         self.loaded_skills = {}
         self.reload_skills()
 
@@ -17,14 +17,12 @@ class SimpleSkillManager(SkillManager):
         self.reload_skills()
 
     def reload_skills(self):
-        self.menu.clear()
+        self.menu = ''
         for file in Path(self.skills_folder).glob("*.json"):
             self.add_skill_to_menu(file.name)
 
     def skills(self):
-        accumulater = f'{self.menu_preamble}\n available skills:'
-        for name, description in self.menu.items():
-            accumulater = f'{accumulater}\n {name}: {description}'
+        accumulater = f'{self.menu_preamble}\n available skills:\n{self.menu}'
 
         accumulater = f'{accumulater}\n loaded skills:'
         for name, text in self.loaded_skills.items():
@@ -52,7 +50,7 @@ class SimpleSkillManager(SkillManager):
         with open(file=f'{self.skills_folder}/{skill_name}') as f:
             t = f.read().strip()
             s = json.loads(t)
-            self.menu[skill_name] = s['description']
+            self.menu = self.menu + f'\n{skill_name} = {s["description"]}'
 
     def create_skill(self, skill_name: str, description: str, text: str):
         if skill_name.endswith('.json'):

@@ -1,20 +1,25 @@
 from collections import deque
+from collections.abc import Iterator
 from .context_provider import ContextProvider
 from ..messages.message import Message, Part
+from ..messages.tool_call_result import ToolCallResult
 from ..skill_managers.skill_manager import SkillManager
+from ..toolbox.toolbox import ToolBox
 
-NAME = 'simple'
 
 class SimpleContext(ContextProvider):
-    def __init__(self, skill_manager: SkillManager, max_length: int = 50):
-        self.memory = deque(maxlen=max_length)
-        self.skill_manager = skill_manager
-        self.system_prompt = ''
+    def __init__(self, skill_manager: SkillManager, toolbox: ToolBox | None = None, max_length: int = 50):
+        self.memory: deque = deque(maxlen=max_length)
+        self.skill_manager: SkillManager = skill_manager
+        self.toolbox: ToolBox = toolbox
+        if self.toolbox:
+            self.toolbox.load(self)
+        self.system_prompt: str = ''
 
     def set_system_prompt(self, system_prompt: str):
         self.system_prompt = system_prompt
 
-    def get_context(self):
+    def get_context(self) -> list[Message]:
         system = f'{self.system_prompt}\n{self.skill_manager.skills()}'
         system_prompt_message = Message(role='system', content=[Part(type='text', data={'text':system})])
         return [system_prompt_message] + list(self.memory)
@@ -30,3 +35,17 @@ class SimpleContext(ContextProvider):
 
     def create_skill(self, skill_name, description, text):
         self.skill_manager.create_skill(skill_name, description, text)
+
+    def has_tools(self) -> bool:
+        return self.toolbox is not None
+
+    def tools(self) -> str:
+        return self.toolbox.schemas()
+
+    def handle_tool_calls(self, calls) -> Iterator[ToolCallResult]:
+        for c in calls.values():
+            try:
+                out = self.toolbox.run_tool(c.name, c.args)
+            except Exception as e:
+                out = f"error: {type(e).__name__}: {e}"
+            yield ToolCallResult(id=c.id, result=out)

@@ -2,10 +2,11 @@ from pathlib import Path
 from .agent import Agent
 from .config import AgentConfig
 from .context.simple import SimpleContext 
-from .providers.open_ai import OpenAiProvider
+from .providers.open_ai_provider import OpenAIProvider
 from .skill_managers.simple import SimpleSkillManager
-from . import tools 
-from . import OPEN_AI_URLS, cli
+from .toolbox.simple import SimpleToolBox
+from . import OPEN_AI_URLS
+from .cli import cli
 
 if __name__ == '__main__':
     print ('Welcome to the TinyAgent demo CLI.')
@@ -43,7 +44,7 @@ if __name__ == '__main__':
             key = input ('Key file was not found, Please enter your key or just hit enter if no key is needed:')  or 'no key'
         
     if api_selection == 1:
-        provider = OpenAiProvider(url, key)
+        provider = OpenAIProvider(url, key)
 
     print ("Please Select your model:") 
 
@@ -66,12 +67,10 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    context = SimpleContext(skill_manager=SimpleSkillManager(), max_length=50)
+    context = SimpleContext(skill_manager=SimpleSkillManager(), toolbox=SimpleToolBox(), max_length=50)
     context.set_system_prompt(new_sys_prompt)
     agentConfig = AgentConfig(client, context)
 
-    tools.load(agentConfig)
+    agent = Agent(agentConfig)                 
 
-    agnt = Agent(agentConfig)                 
-
-    cli(agnt)
+    cli(agent)

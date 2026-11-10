@@ -1,14 +1,15 @@
-from .tool_handler import handle_tool_calls
 from .config import AgentConfig
 from .messages.message import Message, Part
 from .messages.tool_call import ToolCall
+from .providers.client import Client
+from .context.context_provider import ContextProvider
 
 MAX_TOOL_CALLS = 10
 
 class Agent:
-    def __init__(self, agentConfig: AgentConfig):
-        self.client = agentConfig.client
-        self.context = agentConfig.context
+    def __init__(self, agent_config: AgentConfig):
+        self.client: Client = agent_config.client
+        self.context: ContextProvider = agent_config.context
 
     def chat(self, message: Message):
         self.context.add_context(message)
@@ -17,7 +18,16 @@ class Agent:
             messages = self.context.get_context()
 
             content, calls = "", {}
-            for event in self.client.chat(messages):
+
+            if self.context.has_tools():
+                events = self.client.chat(messages, self.context.tools())
+            else:
+                event = self.client.chat(messages)
+
+            if not events:
+                raise Exception('no events from client')
+            
+            for event in events:
                 if event.event_type == "thinking":
                     yield { 'behavior': 'thinking', 'content': event.content} 
 
@@ -39,5 +49,5 @@ class Agent:
 
             self.context.add_context(Message(role='assistant', content=[Part(type='text', data={'text': content})] if content else None, tool_calls=[ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] or []) )
                 
-            for result in handle_tool_calls(calls) or []:
+            for result in self.context.handle_tool_calls(calls) or []:
                 self.context.add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))

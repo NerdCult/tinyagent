@@ -5,7 +5,6 @@ from .provider import Provider, Client
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
 from ..messages.message import Message, Part
-from .. import tools 
 
 class OpenAIClient(Client):
     def __init__(self, provider: Provider, model_name: str):
@@ -39,12 +38,19 @@ class OpenAIClient(Client):
             openai_messages.append(self.message_to_openai(m))
         return openai_messages
     
-    def chat(self, messages: list[Message]) -> Iterator[StreamEvent]:
-        stream = self.provider.chat.completions.create(
-            model=self.model_name, 
-            messages=self.messages_to_openai(messages),
-            tools=tools.schemas(),
-            stream=True)
+    def chat(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
+        if tools:
+            stream = self.provider.chat.completions.create(
+                model=self.model_name, 
+                messages=self.messages_to_openai(messages),
+                tools=tools,
+                stream=True)
+        else:
+            
+            stream = self.provider.chat.completions.create(
+                model=self.model_name, 
+                messages=self.messages_to_openai(messages),
+                stream=True)
 
         calls = {}
         raw_args = {}
@@ -95,7 +101,7 @@ class OpenAIClient(Client):
                     c.args = {}   # or keep raw string if you want to be permissive
             yield StreamEvent(event_type="tool_call", tool_calls=calls, raw=chunk)        
 
-class OpenAiProvider(Provider):
+class OpenAIProvider(Provider):
     def __init__(self, url: str, key: str = "", timeout: int = 600):
         self.connection = OpenAI(base_url=url, api_key=key, timeout=timeout)
     

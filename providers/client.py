@@ -5,5 +5,5 @@ from ..messages.message import Message
 
 class Client(abc.ABC):
     @abc.abstractmethod
-    def chat(self, messages: list[Message]) -> Iterator[StreamEvent]:
+    def chat(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
         pass

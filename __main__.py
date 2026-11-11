@@ -3,9 +3,10 @@ from .agent import Agent
 from .config import AgentConfig
 from .context_managers.simple_context_manager import SimpleContextManger 
 from .api_providers.open_ai_provider import OpenAIProvider
+from .api_providers.anthropic_provider import AnthropicProvider
 from .skill_managers.simple_skill_manager import SimpleSkillManager
 from .toolboxes.simple_toolbox import SimpleToolbox
-from . import OPEN_AI_URLS
+from . import OPEN_AI_URLS, ANTHRIPIC_URLS
 from .cli import cli
 
 if __name__ == '__main__':
@@ -22,13 +23,19 @@ if __name__ == '__main__':
             urls[x] = {'name': api, 'url':OPEN_AI_URLS[api]}
             print (f'{x}. {api}: {OPEN_AI_URLS[api]}')  
 
-    else:
-        print ('Only OpenAI currently supported')
-        exit()
+    elif api_selection == 2:
+        x = 0
+        urls = {}
+
+        print ('Please select url or enter 0 to manually enter: ')
+        for api in ANTHRIPIC_URLS:
+            x = x +1
+            urls[x] = {'name': api, 'url':ANTHRIPIC_URLS[api]}
+            print (f'{x}. {api}: {ANTHRIPIC_URLS[api]}') 
 
     url_selection = int (input ())
     if url_selection == 0:
-        url = input ('Please enter the desired url (ex. https://127.0.0.1:8080/v1): ')
+        url = input ('Please enter the desired url (ex. https://127.0.0.1:8080/v1, https://api.anthropic.com): ')
         key = input ('Please enter your api key or hit enter if one is not needed: ')
     else:
         url = urls[url_selection]['url']
@@ -45,6 +52,8 @@ if __name__ == '__main__':
         
     if api_selection == 1:
         provider = OpenAIProvider(url, key)
+    if api_selection == 2:
+        provider = AnthropicProvider(url, key)
 
     print ("Please Select your model:") 
 

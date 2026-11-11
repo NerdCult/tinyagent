@@ -1,4 +1,3 @@
-import json
 from collections.abc import Iterator
 
 from anthropic import Anthropic
@@ -10,7 +9,6 @@ from .client import Client
 from .provider import Provider
 
 DEFAULT_MAX_TOKENS = 8192
-DEFAULT_BASE_URL = "https://api.anthropic.com"
 
 
 class AnthropicClient(Client):
@@ -177,10 +175,9 @@ class AnthropicClient(Client):
 
 
 class AnthropicProvider(Provider):
-    def __init__(self, api_key: str, base_url: str | None = None, max_tokens: int = DEFAULT_MAX_TOKENS):
+    def __init__(self,  base_url: str, api_key: str, max_tokens: int = DEFAULT_MAX_TOKENS):
         kwargs = {"api_key": api_key or None}
-        if base_url and base_url.rstrip("/") != DEFAULT_BASE_URL:
-            kwargs["base_url"] = base_url
+        kwargs["base_url"] = base_url
         self.connection = Anthropic(**kwargs)
         self.max_tokens = max_tokens
 

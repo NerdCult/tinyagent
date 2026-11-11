@@ -1,15 +1,15 @@
 from .config import AgentConfig
 from .messages.message import Message, Part
 from .messages.tool_call import ToolCall
-from .providers.client import Client
-from .context.context_provider import ContextProvider
+from .api_providers.client import Client
+from .context_managers.context_manager import ContextManager
 
 DEFAULT_MAX_ROUNDS = 10
 
 class Agent:
     def __init__(self, agent_config: AgentConfig, max_rounds: int = DEFAULT_MAX_ROUNDS):
         self.client: Client = agent_config.client
-        self.context: ContextProvider = agent_config.context
+        self.context: ContextManager = agent_config.context
         self.max_rounds = max_rounds
 
     def chat(self, message: Message):

@@ -1,17 +1,17 @@
 from collections import deque
 from collections.abc import Iterator
-from .context_provider import ContextProvider
+from .context_manager import ContextManager
 from ..messages.message import Message, Part
 from ..messages.tool_call_result import ToolCallResult
 from ..skill_managers.skill_manager import SkillManager
-from ..toolbox.toolbox import ToolBox
+from ..toolboxes.toolbox import Toolbox
 
 
-class SimpleContext(ContextProvider):
-    def __init__(self, skill_manager: SkillManager, toolbox: ToolBox | None = None, max_length: int = 50):
+class SimpleContextManger(ContextManager):
+    def __init__(self, skill_manager: SkillManager, toolbox: Toolbox | None = None, max_length: int = 50):
         self.memory: deque = deque(maxlen=max_length)
         self.skill_manager: SkillManager = skill_manager
-        self.toolbox: ToolBox = toolbox
+        self.toolbox: Toolbox = toolbox
         if self.toolbox:
             self.toolbox.load(self)
         self.system_prompt: str = ''

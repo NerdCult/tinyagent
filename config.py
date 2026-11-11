@@ -1,10 +1,10 @@
-from .context.context_provider import ContextProvider
-from .providers.provider import Client
+from .context_managers.context_manager import ContextManager
+from .api_providers.provider import Client
 
 class AgentConfig:
     client: Client
-    context: ContextProvider
+    context: ContextManager
     
-    def __init__(self, client: Client, context: ContextProvider):
+    def __init__(self, client: Client, context: ContextManager):
         self.client = client
         self.context = context

@@ -1,15 +1,15 @@
 from pathlib import Path
 from .agent import Agent
 from .config import AgentConfig
-from .context.simple import SimpleContext 
-from .providers.open_ai_provider import OpenAIProvider
-from .skill_managers.simple import SimpleSkillManager
-from .toolbox.simple import SimpleToolBox
+from .context_managers.simple_context_manager import SimpleContextManger 
+from .api_providers.open_ai_provider import OpenAIProvider
+from .skill_managers.simple_skill_manager import SimpleSkillManager
+from .toolboxes.simple_toolbox import SimpleToolbox
 from . import OPEN_AI_URLS
 from .cli import cli
 
 if __name__ == '__main__':
-    print ('Welcome to the TinyAgent demo CLI.')
+    print ('Welcome to the TinyAgent demo CLI.\n!!!THIS AGENT RUNS WITHOUT GUARDRAILS!!!\nSo do NOT ask it to do things you might regret!')
     api_selection = int(input ("Please Select your api type:\n1. OpenAI\n2. Anthropic\n")) 
 
     if api_selection == 1:
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    context = SimpleContext(skill_manager=SimpleSkillManager(), toolbox=SimpleToolBox(), max_length=50)
+    context = SimpleContextManger(skill_manager=SimpleSkillManager(), toolbox=SimpleToolbox(), max_length=50)
     context.set_system_prompt(new_sys_prompt)
     agentConfig = AgentConfig(client, context)
 

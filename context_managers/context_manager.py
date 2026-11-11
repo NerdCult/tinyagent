@@ -5,7 +5,7 @@ from ..messages.tool_call import ToolCall
 from ..messages.tool_call_result import ToolCallResult
 
 
-class ContextProvider(abc.ABC):
+class ContextManager(abc.ABC):
     @abc.abstractmethod
     def set_system_prompt(self, system_prompt: str):
         pass

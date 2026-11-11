@@ -1,19 +1,19 @@
 import importlib, json, os, traceback, sys
 from pathlib import Path
-from .toolbox import ToolBox
-from ..context.context_provider import ContextProvider
+from .toolbox import Toolbox
+from ..context_managers.context_manager import ContextManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
 
-class SimpleToolBox(ToolBox):
+class SimpleToolbox(Toolbox):
     registry: dict = {}
 
     def __init__(self,  tools_dir: str = DEFAULT_TOOLS_DIR, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.tools_dir: str = tools_dir
         self.max_results_length = max_results_length
 
-    def load(self, context: ContextProvider):
+    def load(self, context: ContextManager):
         for file in Path(self.tools_dir).glob('*.py'):
             if file.stem.startswith('__'):
                 continue

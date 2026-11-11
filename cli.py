@@ -1,5 +1,6 @@
+from .agent import Agent
 
-def cli(agent):
+def cli(agent: Agent):
     from colorama import Fore, init
     from .messages.message import user_message
     init(autoreset=True)

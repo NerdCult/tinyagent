@@ -1,9 +1,9 @@
 import abc
-from ..context.context_provider import ContextProvider
+from ..context_managers.context_manager import ContextManager
 
-class ToolBox(abc.ABC):
+class Toolbox(abc.ABC):
     @abc.abstractmethod
-    def load(self, context: ContextProvider):
+    def load(self, context: ContextManager):
         pass
     @abc.abstractmethod
     def schemas(self):

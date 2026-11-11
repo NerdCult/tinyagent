@@ -4,30 +4,28 @@ from .messages.tool_call import ToolCall
 from .providers.client import Client
 from .context.context_provider import ContextProvider
 
-MAX_TOOL_CALLS = 10
+DEFAULT_MAX_ROUNDS = 10
 
 class Agent:
-    def __init__(self, agent_config: AgentConfig):
+    def __init__(self, agent_config: AgentConfig, max_rounds: int = DEFAULT_MAX_ROUNDS):
         self.client: Client = agent_config.client
         self.context: ContextProvider = agent_config.context
+        self.max_rounds = max_rounds
 
     def chat(self, message: Message):
         self.context.add_context(message)
-        for _ in range(MAX_TOOL_CALLS ):
+        for _ in range(self.max_rounds):
 
             messages = self.context.get_context()
 
             content, calls = "", {}
 
-            if self.context.has_tools():
-                events = self.client.chat(messages, self.context.tools())
-            else:
-                event = self.client.chat(messages)
+            tools = None
 
-            if not events:
-                raise Exception('no events from client')
+            if self.context.has_tools():
+                tools = self.context.tool()
             
-            for event in events:
+            for event in self.client.chat(messages, tools):
                 if event.event_type == "thinking":
                     yield { 'behavior': 'thinking', 'content': event.content} 
 

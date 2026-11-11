@@ -37,7 +37,7 @@ class SimpleContextManager(ContextManager):
             if popped.tool_calls:
                 dropped_tool_call_ids.update(tc.id for tc in popped.tool_calls)
 
-        while count_tokens(self.get_context(), self.tools() if self.has_tools() else None) > self.max_tokens:
+        while self.memory and count_tokens(self.get_context(), self.tools() if self.has_tools() else None) > self.max_tokens:
             pop_front()
 
         while self.memory and self.memory[0].role != 'user':

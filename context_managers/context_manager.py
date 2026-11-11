@@ -26,9 +26,12 @@ class ContextManager(abc.ABC):
         pass
     @abc.abstractmethod
     def has_tools(self) -> bool:
-        pass
+        return False
     @abc.abstractmethod
     def tools(self):
+        pass
+    @abc.abstractmethod
+    def create_tool(self, tool_name: str, code: str):
         pass
     @abc.abstractmethod
     def handle_tool_calls(self, calls: dict[int, ToolCall]) -> Iterator[ToolCallResult]:

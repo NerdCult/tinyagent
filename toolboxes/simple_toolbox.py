@@ -17,25 +17,35 @@ class SimpleToolbox(Toolbox):
         for file in Path(self.tools_dir).glob('*.py'):
             if file.stem.startswith('__'):
                 continue
-            spec = importlib.util.spec_from_file_location(file.stem, file)
-            if spec is None or spec.loader is None:
-                raise ImportError(file)
-            try:
-                mod = importlib.util.module_from_spec(spec)
-                sys.modules[file.stem] = mod
-                spec.loader.exec_module(mod)
-                schema = getattr(mod, "SCHEMA")
+            self.load_tool(file, context)
             
-                if hasattr(mod, "get_context_aware_run"):
-                    fn = getattr(mod, "get_context_aware_run")(context)
-                else:
-                    fn = getattr(mod, "run")
-                self.registry[schema["name"]] = (schema, fn)
-            except Exception:
-                traceback.print_exc()
+
+    def load_tool(self, file: Path, context: ContextManager):
+        spec = importlib.util.spec_from_file_location(file.stem, file)
+        if spec is None or spec.loader is None:
+            raise ImportError(file)
+        try:
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules[file.stem] = mod
+            spec.loader.exec_module(mod)
+            schema = getattr(mod, "SCHEMA")
+            
+            if hasattr(mod, "get_context_aware_run"):
+                fn = getattr(mod, "get_context_aware_run")(context)
+            else:
+                fn = getattr(mod, "run")
+            self.registry[schema["name"]] = (schema, fn)
+        except Exception:
+            traceback.print_exc()
 
     def schemas(self):
         return [{"type": "function", "function": s} for s, _ in self.registry.values()]
+
+    def create_tool(self, tool_name, code, context: ContextManager):
+        tool_file_path = f'{self.tools_dir}/{tool_name}.py'
+        with open(tool_file_path, 'w') as tool_file:
+            tool_file.write(code)
+        self.load_tool(Path(tool_file_path), context)
 
     def run_tool(self, name, args) -> str:
         entry = self.registry.get(name)

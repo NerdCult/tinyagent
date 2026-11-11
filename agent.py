@@ -17,13 +17,9 @@ class Agent:
         for _ in range(self.max_rounds):
 
             messages = self.context.get_context()
+            tools = self.context.tools() if self.context.has_tools() else None
 
             content, calls = "", {}
-
-            tools = None
-
-            if self.context.has_tools():
-                tools = self.context.tools()
             
             for event in self.client.chat(messages, tools):
                 if event.event_type == "thinking":

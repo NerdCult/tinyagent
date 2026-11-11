@@ -23,7 +23,7 @@ class Agent:
             tools = None
 
             if self.context.has_tools():
-                tools = self.context.tool()
+                tools = self.context.tools()
             
             for event in self.client.chat(messages, tools):
                 if event.event_type == "thinking":

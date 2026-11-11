@@ -44,7 +44,7 @@ class SimpleToolBox(ToolBox):
         try:
             out = json.dumps(entry[1](**args), ensure_ascii=False, default=str)
             if len(out) > self.max_results_length:
-                out = out[:self.max_results_length] + f"... [TRUNCATED: result was {len(out)} chars, limit {self.max_result_length}. Request a smaller piece.]"
+                out = out[:self.max_results_length] + f"... [TRUNCATED: result was {len(out)} chars, limit {self.max_results_length}. Request a smaller piece.]"
             return out
         except Exception as e:
             return json.dumps({"error": f"{type(e).__name__}: {e}"})

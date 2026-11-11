@@ -1,15 +1,16 @@
-from collections import deque
 from collections.abc import Iterator
 from .context_manager import ContextManager
-from ..messages.message import Message, Part
+from ..messages.message import Message, Part, user_message
 from ..messages.tool_call_result import ToolCallResult
+from ..messages.token_calculator import count_tokens
 from ..skill_managers.skill_manager import SkillManager
 from ..toolboxes.toolbox import Toolbox
 
 
-class SimpleContextManger(ContextManager):
-    def __init__(self, skill_manager: SkillManager, toolbox: Toolbox | None = None, max_length: int = 50):
-        self.memory: deque = deque(maxlen=max_length)
+class SimpleContextManager(ContextManager):
+    def __init__(self, skill_manager: SkillManager, toolbox: Toolbox | None = None, max_tokens: int = 32_000):
+        self.memory: list = []
+        self.max_tokens = max_tokens
         self.skill_manager: SkillManager = skill_manager
         self.toolbox: Toolbox = toolbox
         if self.toolbox:
@@ -26,6 +27,28 @@ class SimpleContextManger(ContextManager):
 
     def add_context(self, message: Message):
         self.memory.append(message)
+        self._trim_context()
+
+    def _trim_context(self):
+        dropped_tool_call_ids: set[str] = set()
+
+        def pop_front():
+            popped = self.memory.pop(0)
+            if popped.tool_calls:
+                dropped_tool_call_ids.update(tc.id for tc in popped.tool_calls)
+
+        while self.memory and count_tokens(self.get_context(), self.tools() if self.has_tools() else None) > self.max_tokens:
+            pop_front()
+
+        while self.memory and self.memory[0].role != 'user':
+            pop_front()
+
+        if dropped_tool_call_ids:
+            self.memory = [ m for m in self.memory if m.tool_call_id not in dropped_tool_call_ids]
+
+        if not self.memory or len(self.memory) == 0:
+            self.memory.append(user_message('run away context trimming, deleted that whole context!'))
+        
 
     def load_skill(self, skill_name):
         self.skill_manager.load_skill(skill_name=skill_name)

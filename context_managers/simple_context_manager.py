@@ -39,6 +39,10 @@ class SimpleContextManger(ContextManager):
     def has_tools(self) -> bool:
         return self.toolbox is not None
 
+    def create_tool(self, tool_name, code):
+        if self.has_tools():
+            self.toolbox.create_tool(tool_name=tool_name, code=code, context=self)
+
     def tools(self) -> str:
         return self.toolbox.schemas()
 

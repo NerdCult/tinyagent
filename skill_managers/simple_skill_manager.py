@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from .skill_manager import SkillManager
+from ..core.interfaces.skill_manager import SkillManager
 
 DEFAULT_SKILLS_PATH = Path(__file__).parent / 'skills'
 SKILL_SUFFIXES = ('.md', '.json')

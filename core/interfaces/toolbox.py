@@ -1,5 +1,5 @@
 from typing import Protocol
-from ..context_managers.context_manager import ContextManager
+from .context_manager import ContextManager
 
 class Toolbox(Protocol):
     def load(self, context: ContextManager):

@@ -1,10 +1,10 @@
 from typing import Iterator
-from .context_manager import ContextManager
+from ..core.interfaces.context_manager import ContextManager
 from ..messages.message import Message, Part, user_message
 from ..messages.tool_call_result import ToolCallResult
 from ..messages.token_calculator import count_tokens
-from ..skill_managers.skill_manager import SkillManager
-from ..toolboxes.toolbox import Toolbox
+from ..core.interfaces.skill_manager import SkillManager
+from ..core.interfaces.toolbox import Toolbox
 
 
 class SimpleContextManager(ContextManager):

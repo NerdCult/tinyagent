@@ -5,8 +5,8 @@ from anthropic import Anthropic
 from ..messages.message import Message, Part
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
-from .client import Client
-from .provider import Provider
+from ..core.interfaces.client import Client
+from ..core.interfaces.provider import Provider
 
 DEFAULT_MAX_TOKENS = 8192
 

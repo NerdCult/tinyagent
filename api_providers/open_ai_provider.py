@@ -1,7 +1,7 @@
 from openai import OpenAI
 import json
 from typing import Iterator
-from .provider import Provider, Client
+from ..core.interfaces.provider import Provider, Client
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
 from ..messages.message import Message, Part

@@ -1,7 +1,7 @@
 from typing import Protocol, Iterator
-from ..messages.message import Message
-from ..messages.tool_call import ToolCall
-from ..messages.tool_call_result import ToolCallResult
+from ...messages.message import Message
+from ...messages.tool_call import ToolCall
+from ...messages.tool_call_result import ToolCallResult
 
 
 class ContextManager(Protocol):

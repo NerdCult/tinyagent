@@ -1,8 +1,8 @@
 from .config import AgentConfig
 from .messages.message import Message, Part
 from .messages.tool_call import ToolCall
-from .api_providers.client import Client
-from .context_managers.context_manager import ContextManager
+from .core.interfaces.client import Client
+from .core.interfaces.context_manager import ContextManager
 
 DEFAULT_MAX_ROUNDS = 10
 

@@ -1,6 +1,7 @@
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 from .client import Client
 
+@runtime_checkable
 class Provider(Protocol):
     def list_models(self) -> list[str]:
         pass

@@ -5,7 +5,7 @@ from .context_managers.simple_context_manager import SimpleContextManager
 from .api_providers.open_ai_provider import OpenAIProvider
 from .api_providers.anthropic_provider import AnthropicProvider
 from .skill_managers.simple_skill_manager import SimpleSkillManager
-from .toolboxes.simple_toolbox import SimpleToolbox
+from .toolboxes.basic_toolbox import BasicToolbox
 from . import OPEN_AI_URLS, ANTHRIPIC_URLS
 from .cli import cli
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    context = SimpleContextManager(skill_manager=SimpleSkillManager(), toolbox=SimpleToolbox())
+    context = SimpleContextManager(skill_manager=SimpleSkillManager(), toolbox=BasicToolbox())
     context.set_system_prompt(new_sys_prompt)
     agentConfig = AgentConfig(client, context)
 

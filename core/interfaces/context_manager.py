@@ -1,9 +1,9 @@
-from typing import Protocol, Iterator
+from typing import Protocol, Iterator, runtime_checkable
 from ...messages.message import Message
 from ...messages.tool_call import ToolCall
 from ...messages.tool_call_result import ToolCallResult
 
-
+@runtime_checkable
 class ContextManager(Protocol):
     def set_system_prompt(self, system_prompt: str):
         pass

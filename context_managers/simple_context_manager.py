@@ -4,7 +4,7 @@ from ..messages.message import Message, Part, user_message
 from ..messages.tool_call_result import ToolCallResult
 from ..messages.token_calculator import count_tokens
 from ..core.interfaces.skill_manager import SkillManager
-from ..core.interfaces.toolbox import Toolbox
+from ..core.interfaces.toolbox import Toolbox, ToolboxAdvanced
 
 
 class SimpleContextManager(ContextManager):
@@ -63,7 +63,7 @@ class SimpleContextManager(ContextManager):
         return self.toolbox is not None
 
     def create_tool(self, tool_name, code):
-        if self.has_tools():
+        if self.has_tools() and isinstance(self.toolbox, ToolboxAdvanced):
             self.toolbox.create_tool(tool_name=tool_name, code=code, context=self)
 
     def tools(self) -> str:

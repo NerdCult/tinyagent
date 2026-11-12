@@ -1,12 +1,12 @@
 import importlib, json, os, traceback, sys
 from pathlib import Path
-from ..core.interfaces.toolbox import Toolbox
+from ..core.interfaces.toolbox import ToolboxAdvanced
 from ..core.interfaces.context_manager import ContextManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
 
-class SimpleToolbox(Toolbox):
+class AdvancedToolbox(ToolboxAdvanced):
     registry: dict = {}
 
     def __init__(self,  tools_dir: str = DEFAULT_TOOLS_DIR, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):

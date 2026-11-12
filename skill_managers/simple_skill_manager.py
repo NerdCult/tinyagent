@@ -1,6 +1,7 @@
 import json
+from typing import Protocol
 from pathlib import Path
-from ..core.interfaces.skill_manager import SkillManager
+from ..core.interfaces.skill_manager import SkillManager, SkillMangerDynamic, SkillManagerSkillMaker
 
 DEFAULT_SKILLS_PATH = Path(__file__).parent / 'skills'
 SKILL_SUFFIXES = ('.md', '.json')
@@ -33,7 +34,7 @@ def parse_skill(path: Path) -> tuple[str, str]:
     return description, body.strip()
 
 
-class SimpleSkillManager(SkillManager):
+class SimpleSkillManager(SkillManager, SkillMangerDynamic, SkillManagerSkillMaker):
     def __init__(self, skill_folder: str | Path = DEFAULT_SKILLS_PATH):
         self.skills_folder = Path(skill_folder)
         self.menu_preamble: str = 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'

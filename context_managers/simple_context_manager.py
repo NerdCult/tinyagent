@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from typing import Iterator
 from .context_manager import ContextManager
 from ..messages.message import Message, Part, user_message
 from ..messages.tool_call_result import ToolCallResult

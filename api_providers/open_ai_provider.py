@@ -1,14 +1,14 @@
 from openai import OpenAI
 import json
-from collections.abc import Iterator
+from typing import Iterator
 from .provider import Provider, Client
 from ..messages.stream_events import StreamEvent
 from ..messages.tool_call import ToolCall
 from ..messages.message import Message, Part
 
 class OpenAIClient(Client):
-    def __init__(self, provider: Provider, model_name: str):
-        self.provider = provider
+    def __init__(self, client: OpenAI, model_name: str):
+        self.provider = client
         self.model_name = model_name
     
     def part_to_openai(self, part: Part) -> dict:

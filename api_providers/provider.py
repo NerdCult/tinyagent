@@ -1,11 +1,9 @@
-import abc
+from typing import Protocol
 from .client import Client
 
-class Provider(abc.ABC):
-    @abc.abstractmethod
+class Provider(Protocol):
     def list_models(self) -> list[str]:
         pass
 
-    @abc.abstractmethod
     def make_client(self, model_name) -> Client:
         pass

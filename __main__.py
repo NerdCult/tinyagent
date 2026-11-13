@@ -76,7 +76,8 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    session = DefaultSessionManager(agent=Agent(client), system_prompt=new_sys_prompt, skill_manager=SimpleSkillManager(), toolbox=BasicToolbox())
+    session = DefaultSessionManager(system_prompt=new_sys_prompt, skill_manager=SimpleSkillManager(), toolbox=BasicToolbox())
                
-
-    cli(session)
+    agent = Agent(client=client, session=session)
+    
+    cli(agent)

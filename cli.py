@@ -1,6 +1,6 @@
-from .core.interfaces.session_manager import SessionManager
+from .agent import Agent
 
-def cli(session: SessionManager):
+def cli(agent: Agent):
     from colorama import Fore, init
     from .messages.message import user_message
     init(autoreset=True)
@@ -10,7 +10,7 @@ def cli(session: SessionManager):
         using_tool = False                                                
         user_input = input(Fore.GREEN + '\n>>> ')   
         try:                                                
-            for a in session.chat(user_message(text=user_input)):
+            for a in agent.handle_user_message(user_message(text=user_input)):
                 if a.behavior == 'message':
                     continue
                 behavior = a.behavior
@@ -32,13 +32,13 @@ def cli(session: SessionManager):
                         print (Fore.CYAN + '\nagent> ', end="")
                     print (Fore.CYAN + content, end="")
 
-                if behavior == 'tool_call':
+                if behavior == 'tool_calls':
                     if not using_tool:
                         thinking = False
                         replying = False
                         using_tool = True
                         print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
-                    print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
+                    print (Fore.LIGHTYELLOW_EX + str(a.content))
 
                 if behavior == 'done':
                     print (Fore.CYAN + f'\nagent turn ended: {content}')

@@ -1,5 +1,5 @@
 from typing import Protocol, Iterator, runtime_checkable
-from .session_manager import SessionManager
+from .agent_runtime import AgentRuntime
 from ...messages.tool_call_result import ToolCallResult
 from ...messages.tool_call import ToolCall
 
@@ -13,5 +13,5 @@ class Toolbox(Protocol):
 @runtime_checkable
 class ToolboxAdvanced(Toolbox, Protocol):
     ''' provides the same abilities as Toolbox, and the additional ability to 'create_tool()' '''
-    def set_session(self, session: SessionManager): ...
+    def set_session(self, session: AgentRuntime): ...
     def create_tool(self, tool_name: str, code:str): ...

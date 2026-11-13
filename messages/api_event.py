@@ -1,11 +1,11 @@
 from dataclasses import dataclass 
 from typing import Literal, Any
-from ..messages import ToolCall
+from . import ToolCall
 
 EventType = Literal["thinking", "replying", "tool_call", "done", 'error']
 
 @dataclass
-class StreamEvent:
+class ApiEvent:
     event_type: EventType
     content: str | None = None
     tool_calls: dict[int, ToolCall] | None = None

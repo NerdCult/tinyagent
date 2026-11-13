@@ -1,13 +1,13 @@
 from typing import Iterator
-from ..core.interfaces import SessionManager, MemoryManager,SkillManager, Toolbox, ToolboxAdvanced
-from ..messages import Message, Part, AgentMessage
+from ..core.interfaces import AgentRuntime, MemoryManager,SkillManager, Toolbox, ToolboxAdvanced
+from ..messages import TARecord, Part, AgentMessage
 from ..utils import count_tokens
 from ..skill_managers import DefaultSkillManager
 from ..memory_managers import SimpleMemoryManager
-from .. agent import Agent
+from ..agent import Agent
 
 
-class DefaultSessionManager(SessionManager):
+class DefaultAgentRuntime(AgentRuntime):
     def __init__(self,
                  agent: Agent,
                  system_prompt: str = '',
@@ -39,7 +39,7 @@ class DefaultSessionManager(SessionManager):
         
     def _get_context(self):
         system = f'{self.system_prompt}\n{self.skill_manager.skills()}'
-        system_prompt_message = Message(role='system', content=[Part(type='text', data={'text':system})])
+        system_prompt_message = TARecord(role='system', content=[Part(type='text', data={'text':system})])
         return [system_prompt_message] + self.memory_manager.get_context()
     
     def _has_tools(self) -> bool:
@@ -50,7 +50,7 @@ class DefaultSessionManager(SessionManager):
             return self.toolbox.schemas()
         return None
 
-    def handle_user_message(self, message: Message) -> Iterator[AgentMessage]:        
+    def handle_user_message(self, message: TARecord) -> Iterator[AgentMessage]:        
         self._add_context(message)
         tool_calls = None
         for _ in range(self.max_rounds):
@@ -67,6 +67,6 @@ class DefaultSessionManager(SessionManager):
 
             if self._has_tools():
                 for result in self.toolbox.handle_tool_calls(tool_calls):
-                    self._add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
+                    self._add_context(TARecord(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
 
                     

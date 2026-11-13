@@ -1,15 +1,15 @@
 from ..core.interfaces.memory_manager import MemoryManager
-from ..messages import Message, user_message
+from ..messages import TARecord, user_record
 
 
 class SimpleMemoryManager(MemoryManager):
     def __init__(self):
         self.memory: list = []
 
-    def get_context(self) -> list[Message]:
+    def get_context(self) -> list[TARecord]:
         return self.memory
 
-    def add_context(self, message: Message):
+    def add_context(self, message: TARecord):
         self.memory.append(message)
 
     def trim_context(self):
@@ -30,4 +30,4 @@ class SimpleMemoryManager(MemoryManager):
             self.memory = [ m for m in self.memory if m.tool_call_id not in dropped_tool_call_ids]
 
         if not self.memory or len(self.memory) == 0:
-            self.memory.append(user_message('run away context trimming, deleted that whole context!'))
+            self.memory.append(user_record('run away context trimming, deleted that whole context!'))

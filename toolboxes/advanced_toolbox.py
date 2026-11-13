@@ -2,7 +2,7 @@ import importlib, json, os, traceback, sys
 from pathlib import Path
 from typing import Iterator
 from ..messages import ToolCallResult
-from ..core.interfaces.toolbox import ToolboxAdvanced, SessionManager
+from ..core.interfaces.toolbox import ToolboxAdvanced, AgentRuntime
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
@@ -14,7 +14,7 @@ class AdvancedToolbox(ToolboxAdvanced):
         self.max_results_length = max_results_length
         self.registry: dict = {}
 
-    def set_session(self, session: SessionManager):
+    def set_session(self, session: AgentRuntime):
         self.session = session
 
     def load(self):

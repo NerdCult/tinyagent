@@ -1,27 +1,30 @@
-from typing import Protocol, Iterator, runtime_checkable
+import abc
+from typing import Any
+from collections.abc import Iterator
 from ...messages.message import Message
+from ...messages.agent_message import AgentMessage
 from ...messages.tool_call import ToolCall
 from ...messages.tool_call_result import ToolCallResult
 
-@runtime_checkable
-class ContextManager(Protocol):
-    def set_system_prompt(self, system_prompt: str):
+class SessionManager(abc.ABC):
+    @abc.abstractmethod
+    def chat(self, message: Message) -> Iterator[AgentMessage]:
         pass
-    def get_context(self) -> list[Message]:
-        pass
-    def add_context(self, message: Message ):
-        pass
+    @abc.abstractmethod
     def load_skill(self, skill_name: str):
         pass
+    @abc.abstractmethod
     def unload_skill(self, skill_name: str):
         pass
+    @abc.abstractmethod
     def create_skill(self, skill_name: str, description: str, text: str):
         pass
+    @abc.abstractmethod
     def has_tools(self) -> bool:
         return False
+    @abc.abstractmethod
     def tools(self):
         pass
+    @abc.abstractmethod
     def create_tool(self, tool_name: str, code: str):
-        pass
-    def handle_tool_calls(self, calls: dict[int, ToolCall]) -> Iterator[ToolCallResult]:
         pass

@@ -1,6 +1,6 @@
-from .agent import Agent
+from .core.interfaces.session_manager import SessionManager
 
-def cli(agent: Agent):
+def cli(session: SessionManager):
     from colorama import Fore, init
     from .messages.message import user_message
     init(autoreset=True)
@@ -10,9 +10,11 @@ def cli(agent: Agent):
         using_tool = False                                                
         user_input = input(Fore.GREEN + '\n>>> ')   
         try:                                                
-            for a in agent.chat(user_message(text=user_input)):
-                behavior = a['behavior']
-                content = a['content']
+            for a in session.chat(user_message(text=user_input)):
+                if a.behavior == 'message':
+                    continue
+                behavior = a.behavior
+                content = a.content
             
                 if behavior == 'thinking':
                     if not thinking:

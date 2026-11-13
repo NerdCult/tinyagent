@@ -1,7 +1,9 @@
 import importlib, json, os, traceback, sys
 from pathlib import Path
+from typing import Iterator
+from ..messages.tool_call_result import ToolCallResult
 from ..core.interfaces.toolbox import ToolboxAdvanced
-from ..core.interfaces.context_manager import ContextManager
+from ..core.interfaces.session_manager import SessionManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
@@ -13,14 +15,14 @@ class AdvancedToolbox(ToolboxAdvanced):
         self.tools_dir: str = tools_dir
         self.max_results_length = max_results_length
 
-    def load(self, context: ContextManager):
+    def load(self, context: SessionManager):
         for file in Path(self.tools_dir).glob('*.py'):
             if file.stem.startswith('__'):
                 continue
             self.load_tool(file, context)
             
 
-    def load_tool(self, file: Path, context: ContextManager):
+    def load_tool(self, file: Path, context: SessionManager):
         spec = importlib.util.spec_from_file_location(file.stem, file)
         if spec is None or spec.loader is None:
             raise ImportError(file)
@@ -41,7 +43,7 @@ class AdvancedToolbox(ToolboxAdvanced):
     def schemas(self):
         return [{"type": "function", "function": s} for s, _ in self.registry.values()]
 
-    def create_tool(self, tool_name, code, context: ContextManager):
+    def create_tool(self, tool_name, code, context: SessionManager):
         tool_file_path = f'{self.tools_dir}/{tool_name}.py'
         with open(tool_file_path, 'w') as tool_file:
             tool_file.write(code)
@@ -58,3 +60,12 @@ class AdvancedToolbox(ToolboxAdvanced):
             return out
         except Exception as e:
             return json.dumps({"error": f"{type(e).__name__}: {e}"})
+
+
+    def handle_tool_calls(self, calls) -> Iterator[ToolCallResult]:
+        for c in calls.values():
+            try:
+                out = self.toolbox.run_tool(c.name, c.args)
+            except Exception as e:
+                out = f"error: {type(e).__name__}: {e}"
+            yield ToolCallResult(id=c.id, result=out)

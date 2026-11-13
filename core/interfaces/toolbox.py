@@ -1,16 +1,16 @@
-from typing import Protocol
-from .context_manager import ContextManager
+from typing import Protocol, Iterator, runtime_checkable
+from .session_manager import SessionManager
+from ...messages.tool_call_result import ToolCallResult
+from ...messages.tool_call import ToolCall
 
+@runtime_checkable
 class Toolbox(Protocol):
-    ''' Gives a session the ability to 'load()' tools, provide tool 'schemas()' and 'run_tool()' '''
-    def load(self, context: ContextManager):
-        pass
-    def schemas(self):
-        pass
-    def run_tool(self, name: str, args) -> str:
-        pass
+    ''' Gives a session the ability to 'load()' tools, provide tool 'schemas()' and 'handle_tool_calls()' '''
+    def load(self, context: SessionManager): ...
+    def schemas(self): ...
+    def handle_tool_calls(self, calls: list[ToolCall]) -> Iterator[ToolCallResult]: ...
 
+@runtime_checkable
 class ToolboxAdvanced(Toolbox, Protocol):
     ''' provides the same abilities as Toolbox, and the additional ability to 'create_tool()' '''
-    def create_tool(self, tool_name: str, code:str, context: ContextManager):
-        pass
+    def create_tool(self, tool_name: str, code:str, context: SessionManager): ...

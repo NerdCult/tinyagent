@@ -1,7 +1,9 @@
 import importlib, json, os, traceback, sys
 from pathlib import Path
+from typing import Iterator
 from ..core.interfaces.toolbox import Toolbox
-from ..core.interfaces.context_manager import ContextManager
+from ..messages.tool_call_result import ToolCallResult
+from ..core.interfaces.session_manager import SessionManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
@@ -11,7 +13,8 @@ BASIC_TOOL_SET = ['browse_files',
                   'web_search',
                   'read_file',
                   'load_skill',
-                  'unload_skill']
+                  'unload_skill',
+                  'get_utc_time']
 
 class BasicToolbox(Toolbox):
     registry: dict = {}
@@ -19,13 +22,13 @@ class BasicToolbox(Toolbox):
     def __init__(self, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.max_results_length = max_results_length
 
-    def load(self, context: ContextManager):
+    def load(self, context: SessionManager):
         for tool in BASIC_TOOL_SET:
             file = f'{DEFAULT_TOOLS_DIR}/{tool}.py'
             self.load_tool(Path(file), context)
             
 
-    def load_tool(self, file: Path, context: ContextManager):
+    def load_tool(self, file: Path, context: SessionManager):
         spec = importlib.util.spec_from_file_location(file.stem, file)
         if spec is None or spec.loader is None:
             raise ImportError(file)
@@ -57,3 +60,11 @@ class BasicToolbox(Toolbox):
             return out
         except Exception as e:
             return json.dumps({"error": f"{type(e).__name__}: {e}"})
+
+    def handle_tool_calls(self, calls) -> Iterator[ToolCallResult]:
+        for c in calls:
+            try:
+                out = self.run_tool(c.name, c.args)
+            except Exception as e:
+                out = f"error: {type(e).__name__}: {e}"
+            yield ToolCallResult(id=c.id, result=out)

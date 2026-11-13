@@ -34,7 +34,7 @@ def parse_skill(path: Path) -> tuple[str, str]:
     return description, body.strip()
 
 
-class SimpleSkillManager(SkillManager, SkillMangerDynamic, SkillManagerSkillMaker):
+class SimpleSkillManager(SkillManagerSkillMaker):
     def __init__(self, skill_folder: str | Path = DEFAULT_SKILLS_PATH):
         self.skills_folder = Path(skill_folder)
         self.menu_preamble: str = 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'

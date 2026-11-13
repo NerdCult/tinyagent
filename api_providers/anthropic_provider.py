@@ -113,7 +113,7 @@ class AnthropicClient(Client):
             })
         return converted
 
-    def chat(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
+    def get_stream(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
         system, wire = self._to_wire(messages)
         anthropic_tools = self._to_anthropic_tools(tools)
         kwargs = {

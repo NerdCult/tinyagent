@@ -38,7 +38,7 @@ class OpenAIClient(Client):
             openai_messages.append(self.message_to_openai(m))
         return openai_messages
     
-    def chat(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
+    def get_stream(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
         if tools:
             stream = self.provider.chat.completions.create(
                 model=self.model_name, 

@@ -1,3 +1,4 @@
 **/__pycache__/**
 skill_managers/skills/*
-!skill_managers/skill/potato.md
+!skill_managers/skills/potato.md
+!skill_managers/skills/__init__.py

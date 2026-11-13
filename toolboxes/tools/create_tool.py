@@ -11,10 +11,10 @@ SCHEMA = {
     }
 }
 
-def get_context_aware_run(context):
+def make_session_aware_run(session):
     def run(tool_name: str, code: str) -> str:
         try:
-            context.create_tool(tool_name, code)
+            session.create_tool(tool_name, code)
             return f'{tool_name} created'
         except Exception as e:
             return f"Couldn't create {tool_name}: {e}"

@@ -22,13 +22,13 @@ class BasicToolbox(Toolbox):
     def __init__(self, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.max_results_length = max_results_length
 
-    def load(self, context: SessionManager):
+    def load(self):
         for tool in BASIC_TOOL_SET:
             file = f'{DEFAULT_TOOLS_DIR}/{tool}.py'
-            self.load_tool(Path(file), context)
+            self._load_tool(Path(file))
             
 
-    def load_tool(self, file: Path, context: SessionManager):
+    def _load_tool(self, file: Path):
         spec = importlib.util.spec_from_file_location(file.stem, file)
         if spec is None or spec.loader is None:
             raise ImportError(file)
@@ -38,8 +38,8 @@ class BasicToolbox(Toolbox):
             spec.loader.exec_module(mod)
             schema = getattr(mod, "SCHEMA")
             
-            if hasattr(mod, "get_context_aware_run"):
-                fn = getattr(mod, "get_context_aware_run")(context)
+            if hasattr(mod, "make_session_aware_run"):
+                return
             else:
                 fn = getattr(mod, "run")
             self.registry[schema["name"]] = (schema, fn)

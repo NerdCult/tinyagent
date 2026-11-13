@@ -9,10 +9,10 @@ SCHEMA = {
     },
 }
 
-def get_context_aware_run(context):
+def make_session_aware_run(session):
     def run(skill_name: str) -> str:
         try:
-            context.unload_skill(skill_name)
+            session.unload_skill(skill_name)
             return f'{skill_name} unloaded'
         except Exception as e:
             return f"Couldn't unload {skill_name}: {e}"

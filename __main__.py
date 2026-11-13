@@ -6,6 +6,7 @@ from .api_providers.open_ai_provider import OpenAIProvider
 from .api_providers.anthropic_provider import AnthropicProvider
 from .skill_managers.simple_skill_manager import SimpleSkillManager
 from .toolboxes.basic_toolbox import BasicToolbox
+from .toolboxes.advanced_toolbox import AdvancedToolbox
 from . import OPEN_AI_URLS, ANTHRIPIC_URLS
 from .cli import cli
 
@@ -79,5 +80,5 @@ if __name__ == '__main__':
     session = DefaultSessionManager(system_prompt=new_sys_prompt, skill_manager=SimpleSkillManager(), toolbox=BasicToolbox())
                
     agent = Agent(client=client, session=session)
-    
+
     cli(agent)

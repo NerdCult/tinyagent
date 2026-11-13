@@ -11,10 +11,10 @@ SCHEMA = {
     },
 }
 
-def get_context_aware_run(context):
+def make_session_aware_run(session):
     def run(skill_name: str, description: str, text: str) -> str:
         try:
-            context.create_skill(skill_name, description, text)
+            session.create_skill(skill_name, description, text)
             return f'{skill_name} created'
         except Exception as e:
             return f"Couldn't create {skill_name}: {e}"

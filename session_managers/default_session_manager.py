@@ -18,7 +18,9 @@ class DefaultSessionManager(SessionManager):
         self.skill_manager: SkillManager = skill_manager or SimpleSkillManager()
         self.toolbox: Toolbox = toolbox
         if self.toolbox:
-            self.toolbox.load(self)
+            if isinstance(self.toolbox, ToolboxAdvanced):
+                self.toolbox.set_session(self)
+            self.toolbox.load()
         self.max_tokens = max_tokens
 
     def add_context(self, message):
@@ -52,7 +54,7 @@ class DefaultSessionManager(SessionManager):
 
     def create_tool(self, tool_name, code):
         if self.has_tools() and isinstance(self.toolbox, ToolboxAdvanced):
-            self.toolbox.create_tool(tool_name=tool_name, code=code, context=self)
+            self.toolbox.create_tool(tool_name=tool_name, code=code)
 
     def tools(self) -> str | None:
         if self.has_tools():

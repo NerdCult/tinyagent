@@ -1,13 +1,10 @@
 from pathlib import Path
 from .agent import Agent
-from .config import AgentConfig
 from .session_managers.default_session_manager import DefaultSessionManager 
-from .api_providers.open_ai_provider import OpenAIProvider
-from .api_providers.anthropic_provider import AnthropicProvider
-from .skill_managers.simple_skill_manager import SimpleSkillManager
-from .toolboxes.basic_toolbox import BasicToolbox
-from .toolboxes.advanced_toolbox import AdvancedToolbox
-from . import OPEN_AI_URLS, ANTHRIPIC_URLS
+from .api_providers import OpenAIProvider, AnthropicProvider
+from .skill_managers.default_skill_manager import DefaultSkillManager
+from .toolboxes import BasicToolbox, AdvancedToolbox
+from . import OPEN_AI_URLS, ANTHROPIC_URLS
 from .cli import cli
 
 if __name__ == '__main__':
@@ -29,10 +26,10 @@ if __name__ == '__main__':
         urls = {}
 
         print ('Please select url or enter 0 to manually enter: ')
-        for api in ANTHRIPIC_URLS:
+        for api in ANTHROPIC_URLS:
             x = x +1
-            urls[x] = {'name': api, 'url':ANTHRIPIC_URLS[api]}
-            print (f'{x}. {api}: {ANTHRIPIC_URLS[api]}') 
+            urls[x] = {'name': api, 'url':ANTHROPIC_URLS[api]}
+            print (f'{x}. {api}: {ANTHROPIC_URLS[api]}') 
 
     url_selection = int (input ())
     if url_selection == 0:
@@ -77,7 +74,7 @@ if __name__ == '__main__':
 
     new_sys_prompt = input ('Enter a new system prompt or hit enter to accept default: ') or sys_prompt
 
-    session = DefaultSessionManager(system_prompt=new_sys_prompt, skill_manager=SimpleSkillManager(), toolbox=BasicToolbox())
+    session = DefaultSessionManager(system_prompt=new_sys_prompt, skill_manager=DefaultSkillManager(), toolbox=BasicToolbox())
                
     agent = Agent(client=client, session=session)
 

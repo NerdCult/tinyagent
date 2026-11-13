@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Iterator
 from ..core.interfaces.toolbox import Toolbox
 from ..messages.tool_call_result import ToolCallResult
-from ..core.interfaces.session_manager import SessionManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
@@ -17,10 +16,10 @@ BASIC_TOOL_SET = ['browse_files',
                   'get_utc_time']
 
 class BasicToolbox(Toolbox):
-    registry: dict = {}
 
     def __init__(self, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.max_results_length = max_results_length
+        self.registry: dict = {}
 
     def load(self):
         for tool in BASIC_TOOL_SET:

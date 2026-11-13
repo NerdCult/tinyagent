@@ -1,19 +1,18 @@
 import importlib, json, os, traceback, sys
 from pathlib import Path
 from typing import Iterator
-from ..messages.tool_call_result import ToolCallResult
-from ..core.interfaces.toolbox import ToolboxAdvanced
-from ..core.interfaces.session_manager import SessionManager
+from ..messages import ToolCallResult
+from ..core.interfaces.toolbox import ToolboxAdvanced, SessionManager
 
 DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
 
 class AdvancedToolbox(ToolboxAdvanced):
-    registry: dict = {}
 
     def __init__(self, tools_dir: str = DEFAULT_TOOLS_DIR, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.tools_dir: str = tools_dir
         self.max_results_length = max_results_length
+        self.registry: dict = {}
 
     def set_session(self, session: SessionManager):
         self.session = session
@@ -49,7 +48,7 @@ class AdvancedToolbox(ToolboxAdvanced):
         tool_file_path = f'{self.tools_dir}/{tool_name}.py'
         with open(tool_file_path, 'w') as tool_file:
             tool_file.write(code)
-        self.load_tool(Path(tool_file_path), self.session)
+        self._load_tool(Path(tool_file_path), self.session)
 
     def run_tool(self, name, args) -> str:
         entry = self.registry.get(name)

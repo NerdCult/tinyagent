@@ -1,10 +1,8 @@
 from openai import OpenAI
 import json
 from typing import Iterator
-from ..core.interfaces.provider import Provider, Client
-from ..messages.stream_events import StreamEvent
-from ..messages.tool_call import ToolCall
-from ..messages.message import Message, Part
+from ..core.interfaces import Provider, Client
+from ..messages import Message, Part, StreamEvent, ToolCall
 
 class OpenAIClient(Client):
     def __init__(self, client: OpenAI, model_name: str):

@@ -2,11 +2,8 @@ from typing import Iterator
 
 from anthropic import Anthropic
 
-from ..messages.message import Message, Part
-from ..messages.stream_events import StreamEvent
-from ..messages.tool_call import ToolCall
-from ..core.interfaces.client import Client
-from ..core.interfaces.provider import Provider
+from ..messages import Message, Part, StreamEvent, ToolCall
+from ..core.interfaces import Client, Provider
 
 DEFAULT_MAX_TOKENS = 8192
 
@@ -49,7 +46,7 @@ class AnthropicClient(Client):
                     "input": call.args or {},
                 })
             if not content:
-                content = [{"type": "text", "text": ""}]
+                return None
             return {"role": "assistant", "content": content}
 
         if message.role == "tool":
@@ -71,32 +68,61 @@ class AnthropicClient(Client):
         }
 
     def _to_wire(self, messages: list[Message]) -> tuple[str | None, list[dict]]:
-        system_parts = []
-        wire = []
+        system_parts: list[str] = []
+        wire: list[dict] = []
+        seen_tool_use_ids: set[str] = set()
+
         for message in messages:
+            # Anthropic takes the system prompt as a separate parameter
             if message.role == "system":
                 for part in message.content or []:
                     text = part.data.get("text", "") if part.type == "text" else ""
-                    if text:
+                    if text.strip():
                         system_parts.append(text)
                 continue
+
             converted = self._message_to_anthropic(message)
             if converted is None:
                 continue
-            # Consecutive tool results are separate user turns. Anthropic wants them in one user message.
-            if (
-                wire
-                and converted["role"] == "user"
-                and wire[-1]["role"] == "user"
-                and converted["content"]
-                and converted["content"][0].get("type") == "tool_result"
-                and wire[-1]["content"]
-                and isinstance(wire[-1]["content"], list)
-                and wire[-1]["content"][0].get("type") == "tool_result"
-            ):
-                wire[-1]["content"].extend(converted["content"])
+
+            # Anthropic requires the conversation to start with a user turn.
+            # Trimming can leave an assistant message first, so skip it.
+            if not wire and converted["role"] != "user":
                 continue
-            wire.append(converted)
+
+            content = []
+            for block in converted["content"]:
+                block_type = block.get("type")
+
+                if block_type == "text":
+                    text = block.get("text", "")
+                    if converted["role"] == "assistant":
+                        text = text.rstrip()  # trailing whitespace is rejected on the final assistant turn
+                    if not text.strip():
+                        continue  # empty or whitespace-only text is rejected
+                    block = {**block, "text": text}
+
+                elif block_type == "tool_use":
+                    seen_tool_use_ids.add(block["id"])
+
+                elif block_type == "tool_result":
+                    # Its tool_use was trimmed or skipped, so the result is orphaned and would be rejected
+                    if block.get("tool_use_id") not in seen_tool_use_ids:
+                        continue
+
+                content.append(block)
+
+            if not content:
+                continue
+
+            # Messages must alternate user/assistant. Merge back-to-back messages from
+            # the same role (consecutive tool results, or messages left adjacent after
+            # an empty one was dropped).
+            if wire and wire[-1]["role"] == converted["role"]:
+                wire[-1]["content"].extend(content)
+            else:
+                wire.append({"role": converted["role"], "content": content})
+
         system = "\n\n".join(system_parts) if system_parts else None
         return system, wire
 

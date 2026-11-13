@@ -1,9 +1,8 @@
-from ..core.interfaces.session_manager import SessionManager
-from ..messages.message import Message, Part
-from ..utils.token_calculator import count_tokens
-from ..core.interfaces import MemoryManager,SkillManager, SkillManagerSkillMaker, SkillMangerDynamic, Toolbox, ToolboxAdvanced
-from ..skill_managers.simple_skill_manager import SimpleSkillManager
-from ..memory_managers.simple_memory_manager import SimpleMemoryManager
+from ..core.interfaces import SessionManager, MemoryManager,SkillManager, SkillManagerSkillMaker, SkillManagerDynamic, Toolbox, ToolboxAdvanced
+from ..messages import Message, Part
+from ..utils import count_tokens
+from ..skill_managers import DefaultSkillManager
+from ..memory_managers import SimpleMemoryManager
 
 
 class DefaultSessionManager(SessionManager):
@@ -15,7 +14,7 @@ class DefaultSessionManager(SessionManager):
                  max_tokens: int = 32_000):
         self.system_prompt: str = system_prompt
         self.memory_manager = memory_manager or SimpleMemoryManager()
-        self.skill_manager: SkillManager = skill_manager or SimpleSkillManager()
+        self.skill_manager: SkillManager = skill_manager or DefaultSkillManager()
         self.toolbox: Toolbox = toolbox
         if self.toolbox:
             if isinstance(self.toolbox, ToolboxAdvanced):
@@ -38,11 +37,11 @@ class DefaultSessionManager(SessionManager):
                
 
     def load_skill(self, skill_name):
-        if isinstance(self.skill_manager, SkillMangerDynamic):
+        if isinstance(self.skill_manager, SkillManagerDynamic):
             self.skill_manager.load_skill(skill_name=skill_name)
         
     def unload_skill(self, skill_name):        
-        if isinstance(self.skill_manager, SkillMangerDynamic):
+        if isinstance(self.skill_manager, SkillManagerDynamic):
             self.skill_manager.unload_skill(skill_name=skill_name)
 
     def create_skill(self, skill_name, description, text):

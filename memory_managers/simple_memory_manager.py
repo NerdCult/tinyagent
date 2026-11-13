@@ -1,5 +1,5 @@
 from ..core.interfaces.memory_manager import MemoryManager
-from ..messages.message import Message, Part, user_message
+from ..messages import Message, user_message
 
 
 class SimpleMemoryManager(MemoryManager):

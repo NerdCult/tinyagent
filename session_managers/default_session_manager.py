@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from typing import Iterator
 from ..core.interfaces import SessionManager, MemoryManager,SkillManager, Toolbox, ToolboxAdvanced
 from ..messages import Message, Part, AgentMessage
 from ..utils import count_tokens

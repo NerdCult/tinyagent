@@ -1,5 +1,6 @@
 import abc
-from ...messages.message import Message
+from collections.abc import Iterator
+from ...messages import Message, AgentMessage
 from ...messages.tool_call import ToolCall
 
 class SessionManager(abc.ABC):
@@ -29,4 +30,7 @@ class SessionManager(abc.ABC):
         pass
     @abc.abstractmethod
     def handle_tool_calls(self, calls: list[ToolCall]):
+        pass
+    @abc.abstractmethod
+    def handle_user_message(self, message: Message) -> Iterator[AgentMessage]:
         pass

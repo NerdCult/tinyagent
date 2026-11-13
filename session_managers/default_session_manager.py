@@ -1,17 +1,22 @@
+from collections.abc import Iterator
 from ..core.interfaces import SessionManager, MemoryManager,SkillManager, SkillManagerSkillMaker, SkillManagerDynamic, Toolbox, ToolboxAdvanced
-from ..messages import Message, Part
+from ..messages import Message, Part, AgentMessage
 from ..utils import count_tokens
 from ..skill_managers import DefaultSkillManager
 from ..memory_managers import SimpleMemoryManager
+from .. agent import Agent
 
 
 class DefaultSessionManager(SessionManager):
     def __init__(self,
+                 agent: Agent,
                  system_prompt: str = '',
                  memory_manager: MemoryManager | None = None, 
                  skill_manager: SkillManager | None = None, 
                  toolbox: Toolbox | None = None,
-                 max_tokens: int = 32_000):
+                 max_tokens: int = 32_000,
+                 max_rounds: int = 10):
+        self.agent: Agent = agent
         self.system_prompt: str = system_prompt
         self.memory_manager = memory_manager or SimpleMemoryManager()
         self.skill_manager: SkillManager = skill_manager or DefaultSkillManager()
@@ -21,6 +26,7 @@ class DefaultSessionManager(SessionManager):
                 self.toolbox.set_session(self)
             self.toolbox.load()
         self.max_tokens = max_tokens
+        self.max_rounds = max_rounds
 
     def add_context(self, message):
         self.memory_manager.add_context(message=message)
@@ -57,9 +63,25 @@ class DefaultSessionManager(SessionManager):
 
     def tools(self) -> str | None:
         if self.has_tools():
-            return self.toolbox.schemas()
+            return self.toolbox.schemas()        
 
-    def handle_tool_calls(self, calls):
-        if self.has_tools():
-            for result in self.toolbox.handle_tool_calls(calls):
-                self.memory_manager.add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
+    def handle_user_message(self, message: Message) -> Iterator[AgentMessage]:        
+        self.add_context(message)
+        tool_calls = None
+        for _ in range(self.max_rounds):
+            context = self.get_context()
+            for agent_message in self.agent.process_context(context, self.tools() if self.has_tools() else None):
+                if agent_message.behavior == 'message':
+                    self.add_context(agent_message.message)
+                    tool_calls = agent_message.message.tool_calls
+
+                yield agent_message
+
+            if not tool_calls:
+                break
+
+            if self.has_tools():
+                for result in self.toolbox.handle_tool_calls(tool_calls):
+                    self.memory_manager.add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
+
+                    

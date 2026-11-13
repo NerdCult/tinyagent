@@ -5,6 +5,6 @@ OPEN_AI_URLS = {
     "ollama": "http://127.0.0.1:11434/v1",
 }
 
-ANTHRIPIC_URLS = {
+ANTHROPIC_URLS = {
     "anthropic": "https://api.anthropic.com"
 }

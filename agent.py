@@ -1,47 +1,47 @@
-from .config import AgentConfig
-from .messages.message import Message, Part
-from .messages.tool_call import ToolCall
-from .api_providers.client import Client
-from .context_managers.context_manager import ContextManager
+from .messages import Message, Part, AgentMessage, ToolCall
+from .core.interfaces import Client, SessionManager
+from .session_managers.default_session_manager import DefaultSessionManager
 
 DEFAULT_MAX_ROUNDS = 10
 
 class Agent:
-    def __init__(self, agent_config: AgentConfig, max_rounds: int = DEFAULT_MAX_ROUNDS):
-        self.client: Client = agent_config.client
-        self.context: ContextManager = agent_config.context
+    def __init__(self, client: Client, session: SessionManager= DefaultSessionManager(), max_rounds: int = DEFAULT_MAX_ROUNDS):
+        self.client: Client = client
+        self.session: SessionManager = session
         self.max_rounds = max_rounds
 
-    def chat(self, message: Message):
-        self.context.add_context(message)
+    def handle_user_message(self, message: Message):
+        self.session.add_context(message)
         for _ in range(self.max_rounds):
-
-            messages = self.context.get_context()
-            tools = self.context.tools() if self.context.has_tools() else None
-
+            messages = self.session.get_context()
+            tools = self.session.tools()
             content, calls = "", {}
             
-            for event in self.client.chat(messages, tools):
+            for event in self.client.get_stream(messages, tools):
                 if event.event_type == "thinking":
-                    yield { 'behavior': 'thinking', 'content': event.content} 
+                    yield AgentMessage(behavior= 'thinking', content= event.content)
 
                 if event.event_type == "replying":
-                    yield { 'behavior': 'replying', 'content': event.content}
+                    yield AgentMessage(behavior='replying', content= event.content)
                     content = content + event.content
 
                 if event.event_type == "tool_call":
                     calls = event.tool_calls
-                    for call in calls.values():
-                        yield { 'behavior': 'tool_call', 'tool': call.name,'content' : f"\n`{call.args}`\n"}
+                    yield AgentMessage(behavior='tool_calls', content=calls)
 
                 if event.event_type  == "done":
-                    yield {'behavior': 'done', 'content': event.content}
+                    yield AgentMessage( behavior= 'done', content= event.content)
 
             if not calls:
-                self.context.add_context(Message(role='assistant', content=[Part(type='text', data={'text': content})]))
+                if content:
+                    self.session.add_context( Message(role='assistant', content=[Part(type='text', data={'text': content})]))
                 break
+              
 
-            self.context.add_context(Message(role='assistant', content=[Part(type='text', data={'text': content})] if content else None, tool_calls=[ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] or []) )
+            tool_calls = [ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] 
+            
+            self.session.add_context( message= Message(role='assistant', content=[Part(type='text', data={'text': content})] if content else None, tool_calls=tool_calls))
+
+            self.session.handle_tool_calls(tool_calls)
+
                 
-            for result in self.context.handle_tool_calls(calls) or []:
-                self.context.add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))

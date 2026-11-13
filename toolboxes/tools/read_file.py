@@ -1,6 +1,6 @@
 SCHEMA = {
     "name": "read_file",
-    "description": "Read the content of a file to see what it contains. use the start and stop parameters to control the start and stop bytes of the file being read.",
+    "description": "Read the content of a file to see what it contains. use the start and stop parameters to control the start and stop characters of the file being read.",
     "parameters": {
         "type": "object",
         "properties": {

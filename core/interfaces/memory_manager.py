@@ -1,0 +1,9 @@
+from typing import Protocol, runtime_checkable
+from ...messages.message import Message
+
+@runtime_checkable
+class MemoryManager(Protocol):
+    ''' Manages the memory for the session it is attached to. '''
+    def get_context(self) -> list[Message]: ...
+    def add_context(self, message: Message ): ...
+    def trim_context(self): ...

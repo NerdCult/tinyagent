@@ -1,6 +1,6 @@
 import json
 from typing import Callable
-from .message import Message
+from ..messages.message import Message
 
 Counter = Callable[[str], int]
 

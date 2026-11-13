@@ -10,9 +10,11 @@ def cli(agent: Agent):
         using_tool = False                                                
         user_input = input(Fore.GREEN + '\n>>> ')   
         try:                                                
-            for a in agent.chat(user_message(text=user_input)):
-                behavior = a['behavior']
-                content = a['content']
+            for a in agent.handle_user_message(user_message(text=user_input)):
+                if a.behavior == 'message':
+                    continue
+                behavior = a.behavior
+                content = a.content
             
                 if behavior == 'thinking':
                     if not thinking:
@@ -30,13 +32,13 @@ def cli(agent: Agent):
                         print (Fore.CYAN + '\nagent> ', end="")
                     print (Fore.CYAN + content, end="")
 
-                if behavior == 'tool_call':
+                if behavior == 'tool_calls':
                     if not using_tool:
                         thinking = False
                         replying = False
                         using_tool = True
                         print (Fore.LIGHTYELLOW_EX + "\ntool> ", end="")
-                    print (Fore.LIGHTYELLOW_EX + f"{a['tool'] or ""} > {content or "no content"}", end="")
+                    print (Fore.LIGHTYELLOW_EX + str(a.content))
 
                 if behavior == 'done':
                     print (Fore.CYAN + f'\nagent turn ended: {content}')

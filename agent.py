@@ -26,7 +26,6 @@ class Agent:
             if not calls:
                 if content:
                     yield AgentMessage(behavior='message', message=assistant_message(content))
-                return
 
             tool_calls = [ToolCall(id=c.id, name=c.name, args=c.args or {}) for c in calls.values()] 
 

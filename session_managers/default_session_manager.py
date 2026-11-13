@@ -29,35 +29,35 @@ class DefaultSessionManager(SessionManager):
         self.max_tokens = max_tokens
         self.max_rounds = max_rounds
 
-    def add_context(self, message):
+    def _add_context(self, message):
         self.memory_manager.add_context(message)
         while True:
-            if count_tokens(self.get_context(), self.tools()) > self.max_tokens:
+            if count_tokens(self._get_context(), self._tools()) > self.max_tokens:
                 self.memory_manager.trim_context()
                 continue
             break
         
-    def get_context(self):
+    def _get_context(self):
         system = f'{self.system_prompt}\n{self.skill_manager.skills()}'
         system_prompt_message = Message(role='system', content=[Part(type='text', data={'text':system})])
         return [system_prompt_message] + self.memory_manager.get_context()
     
-    def has_tools(self) -> bool:
+    def _has_tools(self) -> bool:
         return self.toolbox is not None
 
-    def tools(self) -> str | None:
-        if self.has_tools():
+    def _tools(self) -> str | None:
+        if self._has_tools():
             return self.toolbox.schemas()
         return None
 
     def handle_user_message(self, message: Message) -> Iterator[AgentMessage]:        
-        self.add_context(message)
+        self._add_context(message)
         tool_calls = None
         for _ in range(self.max_rounds):
-            context = self.get_context()
-            for agent_message in self.agent.process_context(context, self.tools() if self.has_tools() else None):
+            context = self._get_context()
+            for agent_message in self.agent.process_context(context, self._tools()):
                 if agent_message.behavior == 'message':
-                    self.add_context(agent_message.message)
+                    self._add_context(agent_message.message)
                     tool_calls = agent_message.message.tool_calls
 
                 yield agent_message
@@ -65,8 +65,8 @@ class DefaultSessionManager(SessionManager):
             if not tool_calls:
                 break
 
-            if self.has_tools():
+            if self._has_tools():
                 for result in self.toolbox.handle_tool_calls(tool_calls):
-                    self.memory_manager.add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
+                    self._add_context(Message(role='tool', content=[Part(type='text', data={'text': result.result})], tool_call_id=result.id))
 
                     

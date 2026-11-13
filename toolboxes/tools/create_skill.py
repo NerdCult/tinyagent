@@ -1,3 +1,5 @@
+from tinyagent.core.interfaces import SkillManagerDynamic
+
 SCHEMA = {
     "name": "create_skill",
     "description": "Use to create a skill to be added to the available skills into the session context.",
@@ -14,8 +16,10 @@ SCHEMA = {
 def make_session_aware_run(session):
     def run(skill_name: str, description: str, text: str) -> str:
         try:
-            session.create_skill(skill_name, description, text)
-            return f'{skill_name} created'
+            if session.skill_manager and isinstance(session.skill_manger, SkillManagerSkillMaker):
+                session.skill_manager.create_skill(skill_name, description, text)
+                return f'{skill_name} created'
+            return 'Current skill manager does not implement SkillManagerSkillMaker'
         except Exception as e:
             return f"Couldn't create {skill_name}: {e}"
 

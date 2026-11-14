@@ -1,7 +1,7 @@
-from .messages import TARecord, Part, AgentMessage, ToolCall, assistant_record
-from .core.interfaces import Client, ApiAggregator
+from ..messages import TARecord, Part, AgentMessage, ToolCall, assistant_record
+from ..core.interfaces import Client, ApiAggregator
 
-class Agent(ApiAggregator):
+class DefaultApiAggregator(ApiAggregator):
     def __init__(self, client: Client):
         self.client: Client = client
 

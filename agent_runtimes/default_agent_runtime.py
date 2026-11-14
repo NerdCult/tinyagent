@@ -4,19 +4,19 @@ from ..messages import TARecord, Part, AgentMessage
 from ..utils import count_tokens
 from ..skill_managers import DefaultSkillManager
 from ..memory_managers import SimpleMemoryManager
-from ..agent import Agent
+from ..api_aggregators.default_api_aggregator import DefaultApiAggregator
 
 
 class DefaultAgentRuntime(AgentRuntime):
     def __init__(self,
-                 agent: Agent,
+                 agent: DefaultApiAggregator,
                  system_prompt: str = '',
                  memory_manager: MemoryManager | None = None, 
                  skill_manager: SkillManager | None = None, 
                  toolbox: Toolbox | None = None,
                  max_tokens: int = 32_000,
                  max_rounds: int = 10):
-        self.agent: Agent = agent
+        self.agent: DefaultApiAggregator = agent
         self.system_prompt: str = system_prompt
         self.memory_manager = memory_manager or SimpleMemoryManager()
         self.skill_manager: SkillManager = skill_manager or DefaultSkillManager()

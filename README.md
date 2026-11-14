@@ -40,7 +40,7 @@ cli(runtime)
 
 1. Save this as `hello_tiny_agent.py`
 2. Update the URL, MODEL, and KEY
-3. (Optional) Swap `create_openai_client` for `create_anthropic_client` if preferred
+3. (Optional) Swap `openai_agent_runtime` for `anthropic_agent_runtime` if preferred
 4. Run it: `python hello_tiny_agent.py`
 
 When you see the `>>>` prompt, type your message and hit Enter.

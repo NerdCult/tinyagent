@@ -1,12 +1,10 @@
 #Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
 
-import json
+import json, os
 from pathlib import Path
 from ..core.interfaces import SkillManagerSkillMaker
 
-DEFAULT_SKILLS_PATH = Path(__file__).parent / 'skills'
 SKILL_SUFFIXES = ('.md', '.json')
-
 
 def skill_name_of(skill_name: str) -> str:
     """Normalize a skill name: drop any directory part and a known suffix."""
@@ -15,7 +13,6 @@ def skill_name_of(skill_name: str) -> str:
         if name.endswith(suffix):
             return name[:-len(suffix)]
     return name
-
 
 def parse_skill(path: Path) -> tuple[str, str]:
     """Return (description, text) for a .md (front matter) or .json skill."""
@@ -34,19 +31,19 @@ def parse_skill(path: Path) -> tuple[str, str]:
                 description = value.strip()
     return description, body.strip()
 
-
-class DefaultSkillManager_CLU(SkillManagerSkillMaker):
+class AdvancedSkillManager(SkillManagerSkillMaker):
     '''
-    Implements all the Skill Manger options. 
+    Implements all the Skill Manager options. 
     skills() returns a menu of available skill names and descriptions and how to use tools to load and unload skills as well as create new skills.
 
     '''
-    def __init__(self, skill_folder: str | Path = DEFAULT_SKILLS_PATH, menu_preamble: str | None = None):
+    def __init__(self, skill_folder: str = f'{os.getcwd()}/skills', menu_preamble: str | None = None):
         self.skills_folder = Path(skill_folder)
         self.menu_preamble: str = menu_preamble or 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'
         self.available: dict[str, Path] = {}  # name -> file
         self.menu: str = ''
         self.loaded_skills: dict[str, str] = {}
+        Path(skill_folder).mkdir(parents=True, exist_ok=True)
         self.reload_skills()
 
     def reload_skills(self):

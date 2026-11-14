@@ -27,7 +27,6 @@ class DefaultAgentRuntime(AgentRuntime):
         self.toolbox: Toolbox = toolbox
         if self.toolbox:
             if isinstance(self.toolbox, ToolboxAdvanced):
-                print ('advanced toolbox')
                 self.toolbox.set_session(self)
             self.toolbox.load()
         self.max_tokens = max_tokens

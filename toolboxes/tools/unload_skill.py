@@ -17,7 +17,7 @@ def make_session_aware_run(session):
     def run(skill_name: str) -> str:
         try:
             if session.skill_manager and isinstance(session.skill_manager, SkillManagerDynamic):
-                session.unload_skill(skill_name)
+                session.skill_manager.unload_skill(skill_name)
                 return f'{skill_name} unloaded'
             return 'Current skill manager does not implement SkillManagerDynamic'
         except Exception as e:

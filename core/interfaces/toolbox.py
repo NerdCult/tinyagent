@@ -16,7 +16,9 @@ class Toolbox(Protocol):
 class ToolboxAdvanced(Toolbox, Protocol):
     ''' 
     provides the same abilities as Toolbox, and the additional ability to 'create_tool()'
-    create_tool() is designed to work with a session aware create_tool() tool that is a pass thru to ToolBoxAdvanced.create_tool()
+    create_tool() is designed to work with a session aware create_tool() 
     '''
     def set_session(self, session: AgentRuntime): ...
+    ''' set the current AgentRuntime session to support 'session aware tools' '''
     def create_tool(self, tool_name: str, code:str): ...
+    ''' using this toolbox level method allows tools to be created from the UI as well as a session aware create_tool tool and additiona should beter facilitate toolbox implementations with alternative persistence methods '''

@@ -1,7 +1,9 @@
 #Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
 
-from .default_skill_manager_clu import DefaultSkillManager_CLU
+from .advanced_skill_manager import AdvancedSkillManager
+from .simple_skill_manager import SimpleSkillManager
 
 __all__ = [
-    'DefaultSkillManager_CLU'
+    'AdvancedSkillManager',
+    'SimpleSkillManager'
 ]

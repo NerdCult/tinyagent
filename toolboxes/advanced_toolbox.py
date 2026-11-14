@@ -6,15 +6,19 @@ from typing import Iterator
 from ..messages import ToolCallResult
 from ..core.interfaces.toolbox import ToolboxAdvanced, AgentRuntime
 
-DEFAULT_TOOLS_DIR = F'{os.path.dirname(__file__)}/tools'
 DEFAULT_MAX_RESULTS_LENGTH = 50_000
 
 class AdvancedToolbox(ToolboxAdvanced):
-
-    def __init__(self, tools_dir: str = DEFAULT_TOOLS_DIR, max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
+    ''' 
+    Implements ToolboxAdvanced which allows it to create new tool if a create_tool tool is present.
+    The default tools_dir is the current working directory + /tools when the toolbox initiallizes.
+    tinyagent.copy_built_in_tools() will copy the built in tools to the current working directory + /tools.
+    '''
+    def __init__(self, tools_dir: str = f'{os.getcwd()}/tools', max_results_length: int = DEFAULT_MAX_RESULTS_LENGTH):
         self.tools_dir: str = tools_dir
         self.max_results_length = max_results_length
         self.registry: dict = {}
+        Path(tools_dir).mkdir(parents=True, exist_ok=True)
 
     def set_session(self, session: AgentRuntime):
         self.session = session

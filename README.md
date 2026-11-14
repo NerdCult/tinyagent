@@ -11,6 +11,9 @@ Email me at gbdenney84@gmail.com to inquire about a license (or open a GitHub is
 
 For full legal terms, see the [LICENSE](LICENSE) file. Commercial use or uses outside the license always requires explicit written approval from the copyright holder (Gene B. Denney).
 
+## Introduction
+TinyAgent is a AI Agent library. Built to be functional out-of-the-box but completely extensible and customisable. Each component implements  Python Protocol class and each edge has an internal data class for normalization. The core object is the AgentRuntime. AgentRuntime manages the recieving the user input, context building (chat history, system prompt, skills, and tools), the agent loop (api call, normalization, tool calls). The only required parameter to the AgentRuntime is an Api Client but can optionally take a system prompt, MemoryManger, SkillManger, Toolbox, max_tokens (for context size)  and max_rounds(for the agent loop). 
+
 ## Quick Start: Hello TinyAgent
 
 The sample below runs a simple command-line chat interface.

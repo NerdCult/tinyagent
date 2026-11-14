@@ -1,16 +1,16 @@
 #Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
 
-from tinyagent import *
+from tinyagent import openai_agent_runtime, cli
 
+#configure your connection
 
-URL = 'url'
-KEY= 'your key'
-MODEL = 'model name'
+URL = 'https://api.openai.com/v1'   # or your preferred endpoint
+MODEL = 'gpt-4o-mini'               # or whatever you prefer
+KEY = 'your-key-here'
 
-SYSTEM_PROMPT = 'You are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers unless a longer explaination is specifically warranted. If a longer explaination is warranted, open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. Following the TL;DR provide the complete answer in a direct, state the facts manner.'
+#Create a basic instance of AgentRuntime
+# use anthropic_agent_runtime if you want to connect to their api
+runtime = openai_agent_runtime(url=URL, model=MODEL, key=KEY)
 
-client = create_openai_client(URL, MODEL, KEY)
-
-session = DefaultAgentRuntime(DefaultApiAggregator(client), SYSTEM_PROMPT)
-
-cli(session)
+#Launch the command line interface to interact with the AgentRuntime runtime. output is color-coded green -> user, red -> agent thinking, yellow -> tool calls, blue -> agent reply
+cli(runtime)

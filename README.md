@@ -24,21 +24,22 @@ The sample below runs a simple command-line chat interface.
 **USE THE ADVANCED TOOLBOX WITH CAUTION — THERE ARE NO HARD BUILT-IN GUARDRAILS.**
 
 ```python
-from tinyagent import *
+from tinyagent import openai_agent_runtime, cli
 
 URL = 'https://api.openai.com/v1'   # or your preferred endpoint
-KEY = 'your-key-here'
 MODEL = 'gpt-4o-mini'               # or whatever you prefer
+KEY = 'your-key-here'
 
-session = DefaultAgentRuntime(
-    DefaultApiAggregator(create_openai_client(URL, MODEL, KEY))
-)
+#Create a basic instance of AgentRuntime
+# use anthropic_agent_runtime if you want to connect to their api
+runtime = openai_agent_runtime(url=URL, model=MODEL, key=KEY)
 
-cli(session)
+#Launch the command line interface to interact with the AgentRuntime runtime. output is color-coded green -> user, red -> agent thinking, yellow -> tool calls, blue -> agent reply
+cli(runtime)
 ```
 
 1. Save this as `hello_tiny_agent.py`
-2. Update the URL, KEY, and MODEL
+2. Update the URL, MODEL, and KEY
 3. (Optional) Swap `create_openai_client` for `create_anthropic_client` if preferred
 4. Run it: `python hello_tiny_agent.py`
 

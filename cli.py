@@ -1,16 +1,16 @@
-from .agent import Agent
+from colorama import Fore, init
+from .core.interfaces import AgentRuntime
+from .messages.ta_record import user_record
+init(autoreset=True)
 
-def cli(agent: Agent):
-    from colorama import Fore, init
-    from .messages.message import user_message
-    init(autoreset=True)
+def cli(session: AgentRuntime):
     while True:
         thinking = False
         replying = False
         using_tool = False                                                
         user_input = input(Fore.GREEN + '\n>>> ')   
         try:                                                
-            for a in agent.handle_user_message(user_message(text=user_input)):
+            for a in session.handle_user_message(user_record(text=user_input)):
                 if a.behavior == 'message':
                     continue
                 behavior = a.behavior

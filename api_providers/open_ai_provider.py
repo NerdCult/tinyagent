@@ -2,7 +2,7 @@ from openai import OpenAI
 import json
 from typing import Iterator
 from ..core.interfaces import Provider, Client
-from ..messages import Message, Part, StreamEvent, ToolCall
+from ..messages import TARecord, Part, ApiEvent, ToolCall
 
 class OpenAIClient(Client):
     def __init__(self, client: OpenAI, model_name: str):
@@ -18,7 +18,7 @@ class OpenAIClient(Client):
             return {"type": "audio", "audio": part.data}
         return {"type": part.type, **part.data}
     
-    def message_to_openai(self, message: Message) -> dict:
+    def message_to_openai(self, message: TARecord) -> dict:
         if message.role == "tool":
             return {
                 "role": "tool",
@@ -30,13 +30,13 @@ class OpenAIClient(Client):
             result["tool_calls"] = [{'id': tc.id, 'type': 'function', 'function': {'name': tc.name, 'arguments': json.dumps(tc.args) if isinstance(tc.args, dict) else (tc.args or "{}")}} for tc in message.tool_calls]
         return result
 
-    def messages_to_openai(self, messages: list[Message]):
+    def messages_to_openai(self, messages: list[TARecord]):
         openai_messages = []
         for m in messages:
             openai_messages.append(self.message_to_openai(m))
         return openai_messages
     
-    def get_stream(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
+    def get_stream(self, messages: list[TARecord], tools: list[dict] | None = None) -> Iterator[ApiEvent]:
         if tools:
             stream = self.provider.chat.completions.create(
                 model=self.model_name, 
@@ -52,6 +52,8 @@ class OpenAIClient(Client):
 
         calls = {}
         raw_args = {}
+        surragate_call_indeces = {}
+        surragate_call_index = 0
         for chunk in stream:
             if not chunk.choices:
                 continue
@@ -63,21 +65,27 @@ class OpenAIClient(Client):
             rtext = getattr(delta, "reasoning_content", None) or extra.get  ("reasoning_content") or extra.get ("reasoning")
 
             if rtext:
-                yield StreamEvent(
+                yield ApiEvent(
                     event_type="thinking",
                     content=rtext,
                     raw=chunk
                  )
 
             if delta.content:
-                yield StreamEvent(
+                yield ApiEvent(
                     event_type="replying",
                     content=delta.content,
                     raw=chunk
                 )
 
             for call in delta.tool_calls or []:
-                idx = call.index
+                idx = 0
+                if call.index:
+                    idx = call.index
+                else:
+                    surragate_call_indeces[call.id] = surragate_call_index
+                    idx = surragate_call_index
+                    surragate_call_index = surragate_call_index + 1
                 if call.id:
                     calls.setdefault(idx, ToolCall(id=call.id, name="", args={})).id = call.id
                 if call.function:
@@ -87,7 +95,7 @@ class OpenAIClient(Client):
                         raw_args[idx] = raw_args.get(idx, "") + call.function.arguments
 
             if finish_reason:
-                yield StreamEvent(event_type='done', content=finish_reason)
+                yield ApiEvent(event_type='done', content=finish_reason)
                 break
             
         if calls:
@@ -97,7 +105,7 @@ class OpenAIClient(Client):
                     c.args = json.loads(s) if s else {}
                 except json.JSONDecodeError:
                     c.args = {}   # or keep raw string if you want to be permissive
-            yield StreamEvent(event_type="tool_call", tool_calls=calls, raw=chunk)        
+            yield ApiEvent(event_type="tool_call", tool_calls=calls, raw=chunk)        
 
 class OpenAIProvider(Provider):
     def __init__(self, url: str, key: str = "", timeout: int = 600):

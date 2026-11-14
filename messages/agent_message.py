@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Literal
-from .message import Message
+from .ta_record import TARecord
 
-agent_message_type = Literal['thinking', 'replying', 'tool_calls' 'done']
+agent_message_type = Literal['thinking', 'replying', 'tool_calls', 'message', 'done']
 
 @dataclass
 class AgentMessage:
     behavior: agent_message_type
     content: str = '' 
-    message: Message | None = None
+    message: TARecord | None = None

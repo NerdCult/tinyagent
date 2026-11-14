@@ -2,7 +2,7 @@ from typing import Iterator
 
 from anthropic import Anthropic
 
-from ..messages import Message, Part, StreamEvent, ToolCall
+from ..messages import TARecord, Part, ApiEvent, ToolCall
 from ..core.interfaces import Client, Provider
 
 DEFAULT_MAX_TOKENS = 8192
@@ -28,7 +28,7 @@ class AnthropicClient(Client):
             }
         return {"type": part.type, **part.data}
 
-    def _message_to_anthropic(self, message: Message) -> dict | None:
+    def _message_to_anthropic(self, message: TARecord) -> dict | None:
         if message.role == "system":
             return None
 
@@ -67,7 +67,7 @@ class AnthropicClient(Client):
             "content": [self._part_to_anthropic(p) for p in (message.content or [])],
         }
 
-    def _to_wire(self, messages: list[Message]) -> tuple[str | None, list[dict]]:
+    def _to_wire(self, messages: list[TARecord]) -> tuple[str | None, list[dict]]:
         system_parts: list[str] = []
         wire: list[dict] = []
         seen_tool_use_ids: set[str] = set()
@@ -139,7 +139,7 @@ class AnthropicClient(Client):
             })
         return converted
 
-    def get_stream(self, messages: list[Message], tools: list[dict] | None = None) -> Iterator[StreamEvent]:
+    def get_stream(self, messages: list[TARecord], tools: list[dict] | None = None) -> Iterator[ApiEvent]:
         system, wire = self._to_wire(messages)
         anthropic_tools = self._to_anthropic_tools(tools)
         kwargs = {
@@ -161,11 +161,11 @@ class AnthropicClient(Client):
                 event_type = getattr(event, "type", None)
 
                 if event_type == "text":
-                    yield StreamEvent(event_type="replying", content=event.text)
+                    yield ApiEvent(event_type="replying", content=event.text)
                     continue
 
                 if event_type == "thinking":
-                    yield StreamEvent(event_type="thinking", content=event.thinking)
+                    yield ApiEvent(event_type="thinking", content=event.thinking)
                     continue
 
                 if event_type == "content_block_start":
@@ -188,16 +188,16 @@ class AnthropicClient(Client):
                         call.name = getattr(block, "name", call.name)
                         call.args = args
                         calls[event.index] = call
-                        yield StreamEvent(event_type="tool_call", tool_calls=dict(calls))
+                        yield ApiEvent(event_type="tool_call", tool_calls=dict(calls))
                     continue
 
                 if event_type == "error":
                     err = getattr(event, "error", None)
                     message = getattr(err, "message", None) or str(err or event)
-                    yield StreamEvent(event_type="done", content=message, raw=event)
+                    yield ApiEvent(event_type="done", content=message, raw=event)
                     return
 
-        yield StreamEvent(event_type="done", content="", tool_calls=calls or None)
+        yield ApiEvent(event_type="done", content="", tool_calls=calls or None)
 
 
 class AnthropicProvider(Provider):

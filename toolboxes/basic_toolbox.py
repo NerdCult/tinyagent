@@ -45,7 +45,7 @@ class BasicToolbox(Toolbox):
         except Exception:
             traceback.print_exc()
 
-    def schemas(self):
+    def schemas(self) -> list[dict]:
         return [{"type": "function", "function": s} for s, _ in self.registry.values()]
     
     def run_tool(self, name, args) -> str:

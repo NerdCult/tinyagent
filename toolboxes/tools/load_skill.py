@@ -1,3 +1,5 @@
+from tinyagent.core.interfaces import SkillManagerDynamic
+
 SCHEMA = {
     "name": "load_skill",
     "description": "Use to load a skill from the available skills into the session context.",
@@ -12,8 +14,10 @@ SCHEMA = {
 def make_session_aware_run(session):
     def run(skill_name: str) -> str:
         try:
-            session.load_skill(skill_name)
-            return f'{skill_name} loaded'
+            if session.skill_manager and isinstance(session.skill_manager, SkillManagerDynamic):
+                session.skill_manager.load_skill(skill_name)
+                return f'{skill_name} loaded'
+            return 'Current skill manager does not implement SkillMangerDynamic'
         except Exception as e:
             return f"Couldn't read {skill_name}: {e}"
 

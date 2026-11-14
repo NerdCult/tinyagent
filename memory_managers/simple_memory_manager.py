@@ -1,8 +1,12 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from ..core.interfaces.memory_manager import MemoryManager
 from ..messages import TARecord, user_record
 
-
 class SimpleMemoryManager(MemoryManager):
+    '''
+    stores a single session history in memory, no persistence once the session is closed.
+    '''
     def __init__(self):
         self.memory: list = []
 

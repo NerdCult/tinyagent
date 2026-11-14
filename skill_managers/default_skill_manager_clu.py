@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 import json
 from pathlib import Path
 from ..core.interfaces import SkillManagerSkillMaker
@@ -33,10 +35,15 @@ def parse_skill(path: Path) -> tuple[str, str]:
     return description, body.strip()
 
 
-class DefaultSkillManager(SkillManagerSkillMaker):
-    def __init__(self, skill_folder: str | Path = DEFAULT_SKILLS_PATH):
+class DefaultSkillManager_CLU(SkillManagerSkillMaker):
+    '''
+    Implements all the Skill Manger options. 
+    skills() returns a menu of available skill names and descriptions and how to use tools to load and unload skills as well as create new skills.
+
+    '''
+    def __init__(self, skill_folder: str | Path = DEFAULT_SKILLS_PATH, menu_preamble: str | None = None):
         self.skills_folder = Path(skill_folder)
-        self.menu_preamble: str = 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'
+        self.menu_preamble: str = menu_preamble or 'Provided below are the available skills in this environment. To have it loaded into the context use the load_skill tools providing the name of the skill to load. Use unload_skill if a skill is no longer needed.'
         self.available: dict[str, Path] = {}  # name -> file
         self.menu: str = ''
         self.loaded_skills: dict[str, str] = {}
@@ -53,7 +60,7 @@ class DefaultSkillManager(SkillManagerSkillMaker):
             lines.append(f'{name} = {parse_skill(path)[0]}')
         self.menu = '\n'.join(lines)
 
-    def skills(self):
+    def skills(self) -> str:
         loaded = ''.join(f'\n {name}: {text}' for name, text in self.loaded_skills.items())
         return f'{self.menu_preamble}\n available skills:\n{self.menu}\n loaded skills:{loaded}'
 

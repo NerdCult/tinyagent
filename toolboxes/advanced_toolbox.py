@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 import importlib, json, os, traceback, sys
 from pathlib import Path
 from typing import Iterator

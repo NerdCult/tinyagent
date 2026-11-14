@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from openai import OpenAI
 import json
 from typing import Iterator

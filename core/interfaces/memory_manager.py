@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from typing import Protocol, runtime_checkable
 from ...messages.ta_record import TARecord
 

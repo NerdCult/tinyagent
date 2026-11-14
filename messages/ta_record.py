@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from dataclasses import dataclass
 from typing import Literal
 from .tool_call import ToolCall
@@ -8,18 +10,31 @@ class Part:
     data: dict
 
 RoleType = Literal['system', 'user', 'assistant', 'tool']
+
 @dataclass
 class TARecord:
+    '''
+    The Tiny Agent internal data class used to store interactions between user, assitant, system, and tool results.
+    '''
     role: RoleType
     content: list[Part]
     tool_call_id: str | None = None
     tool_calls: list[ToolCall] | None = None
 
 def user_record( text: str) -> TARecord:
+    '''
+    helper function to create a user TARecord 
+    '''
     return TARecord(role='user', content=[Part('text', {'text': text})])
 
 def assistant_record( text: str) -> TARecord:
+    '''
+    helper function to create a user TARecord 
+    '''
     return TARecord(role='assistant', content=[Part(type='text', data={'text': text})])
 
 def system_record(text: str) -> TARecord:
+    '''
+    helper function to create a user TARecord 
+    '''
     return TARecord(role='system', content=[Part(type='text', data={'text': text})])

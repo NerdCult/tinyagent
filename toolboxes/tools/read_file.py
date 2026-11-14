@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 SCHEMA = {
     "name": "read_file",
     "description": "Read the content of a file to see what it contains. use the start and stop parameters to control the start and stop characters of the file being read.",

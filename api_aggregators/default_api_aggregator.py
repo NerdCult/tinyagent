@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from ..messages import TARecord, Part, AgentMessage, ToolCall, assistant_record
 from ..core.interfaces import Client, ApiAggregator
 

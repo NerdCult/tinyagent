@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from colorama import Fore, init
 from .core.interfaces import AgentRuntime
 from .messages.ta_record import user_record

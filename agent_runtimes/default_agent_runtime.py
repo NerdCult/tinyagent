@@ -1,22 +1,26 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from typing import Iterator
-from ..core.interfaces import AgentRuntime, MemoryManager,SkillManager, Toolbox, ToolboxAdvanced
+from ..core.interfaces import AgentRuntime, MemoryManager,SkillManager, Toolbox, ToolboxAdvanced, ApiAggregator
 from ..messages import TARecord, Part, AgentMessage
 from ..utils import count_tokens
-from ..skill_managers import DefaultSkillManager
 from ..memory_managers import SimpleMemoryManager
-from ..api_aggregators.default_api_aggregator import DefaultApiAggregator
 
 
 class DefaultAgentRuntime(AgentRuntime):
+    '''
+    default implementation of AgentRuntime.
+    the only required parameter is aggregator: ApiAggregator
+    '''
     def __init__(self,
-                 aggregator: DefaultApiAggregator,
+                 aggregator: ApiAggregator,
                  system_prompt: str = '',
                  memory_manager: MemoryManager | None = None, 
                  skill_manager: SkillManager | None = None, 
                  toolbox: Toolbox | None = None,
                  max_tokens: int = 32_000,
                  max_rounds: int = 10):
-        self.aggregator: DefaultApiAggregator = aggregator
+        self.aggregator: ApiAggregator = aggregator
         self.system_prompt: str = system_prompt
         self.memory_manager = memory_manager or SimpleMemoryManager()
         self.skill_manager: SkillManager = skill_manager 

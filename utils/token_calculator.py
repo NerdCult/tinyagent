@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 import json
 from typing import Callable
 from ..messages import TARecord

@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from .agent_message import AgentMessage
 from .ta_record import TARecord, Part, user_record, assistant_record, system_record
 from .tool_call import ToolCall

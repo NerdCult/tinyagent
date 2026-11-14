@@ -1,3 +1,5 @@
+#Copyright (c) 2026 Gene B. Denney. All Rights Reserved.
+
 from .agent_runtime import AgentRuntime
 from .api_aggrerator import ApiAggregator
 from .client import Client

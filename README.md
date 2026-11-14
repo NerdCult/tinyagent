@@ -1,11 +1,23 @@
 **UNDER CONSTRUCTION**
 
-To see the demo cli:
-```
-git clone https://github.com/NerdCult/tinyagent.git
-python -m tinyagent
-```
-
-currently only OpenAI API is supported
-
 **This agent has ZERO guardrails! So don't ask for something you don't want**
+
+
+hello Tiny Agent:
+
+```
+from tinyagent import *
+
+
+URL = 'url'
+KEY= 'your key'
+MODEL = 'model name'
+
+SYSTEM_PROMPT = 'You are Friday. A helpful, however snarky and sarcastic, assistant. Provide quick brief answers unless a longer explaination is specifically warranted. If a longer explaination is warranted, open with a TL;DR summary, sticking to the helpful however snarky and saracastic persona. Following the TL;DR provide the complete answer in a direct, state the facts manner.'
+
+client = create_openai_client(URL, MODEL, KEY)
+
+session = DefaultAgentRuntime(DefaultApiAggregator(client), SYSTEM_PROMPT)
+
+cli(session)
+```

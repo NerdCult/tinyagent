@@ -9,17 +9,17 @@ from ..api_aggregators.default_api_aggregator import DefaultApiAggregator
 
 class DefaultAgentRuntime(AgentRuntime):
     def __init__(self,
-                 agent: DefaultApiAggregator,
+                 aggregator: DefaultApiAggregator,
                  system_prompt: str = '',
                  memory_manager: MemoryManager | None = None, 
                  skill_manager: SkillManager | None = None, 
                  toolbox: Toolbox | None = None,
                  max_tokens: int = 32_000,
                  max_rounds: int = 10):
-        self.agent: DefaultApiAggregator = agent
+        self.aggregator: DefaultApiAggregator = aggregator
         self.system_prompt: str = system_prompt
         self.memory_manager = memory_manager or SimpleMemoryManager()
-        self.skill_manager: SkillManager = skill_manager or DefaultSkillManager()
+        self.skill_manager: SkillManager = skill_manager 
         self.toolbox: Toolbox = toolbox
         if self.toolbox:
             if isinstance(self.toolbox, ToolboxAdvanced):
@@ -38,7 +38,7 @@ class DefaultAgentRuntime(AgentRuntime):
             break
         
     def _get_context(self):
-        system = f'{self.system_prompt}\n{self.skill_manager.skills()}'
+        system = f'{self.system_prompt}\n{self.skill_manager.skills() if self.skill_manager else ''}'
         system_prompt_message = TARecord(role='system', content=[Part(type='text', data={'text':system})])
         return [system_prompt_message] + self.memory_manager.get_context()
     
@@ -55,7 +55,7 @@ class DefaultAgentRuntime(AgentRuntime):
         tool_calls = None
         for _ in range(self.max_rounds):
             context = self._get_context()
-            for agent_message in self.agent.process_context(context, self._tools()):
+            for agent_message in self.aggregator.process_context(context, self._tools()):
                 if agent_message.behavior == 'message':
                     self._add_context(agent_message.message)
                     tool_calls = agent_message.message.tool_calls
